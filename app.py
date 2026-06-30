@@ -72,6 +72,7 @@ def login():
         user = User.query.filter_by(email=email).first()
         if user and user.check_password(password):
             session['user_id'] = user.id_utilisateur
+            session['user'] = user.email
             session['role'] = user.role
             session['nom'] = user.nom
             session['prenom'] = user.prenom

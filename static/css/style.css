@@ -186,7 +186,8 @@ a { text-decoration: none; color: inherit; }
 
 /* Landing footer */
 .landing-footer {
-  background: var(--dark); color: white;
+  background: linear-gradient(135deg, #2d7a27 0%, #4caf50 35%, #f4c430 70%, #d9534f 100%);
+  color: white;
   padding: 2rem 3rem; margin-top: 2rem;
 }
 .footer-brand { display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem; }

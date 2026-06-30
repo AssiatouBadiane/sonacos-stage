@@ -12,12 +12,11 @@
 
 <!-- LANDING NAVBAR -->
 <nav class="landing-nav">
-  <div class="landing-logo">
-    <!-- Logo SONACOS SVG inline comme dans l'image 2 -->
     <div class="landing-logo">
-      <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" height="45">
+     <a href="{{ url_for('index') }}" class="landing-logo">
+      <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" style="height:45px; width:auto; max-width:160px; object-fit:contain;">
+     </a>
     </div>
-  </div>
   <div class="landing-nav-links">
     <a href="#" class="nav-link-light active">Accueil</a>
     <a href="{{ url_for('login') }}" class="btn-connect">Se connecter</a>

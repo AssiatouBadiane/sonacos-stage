@@ -13,11 +13,10 @@
 {% if session.user %}
 <!-- NAVBAR -->
 <nav class="navbar">
-  <div class="nav-brand">
-    <div class="logo-box">
-      <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" width="38" height="38">
-    </div>
-    <span class="brand-name">SONACOS</span>
+ <div class="nav-brand">
+    <a href="{{ url_for('accueil') }}" class="logo-box">
+      <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" style="width:100px; height:37px;">
+    </a>
   </div>
 
   <div class="nav-links">
@@ -25,7 +24,7 @@
       <i class="fas fa-home"></i> Accueil
     </a>
     <a href="{{ url_for('assistant') }}" class="nav-link {% if request.endpoint == 'assistant' %}active{% endif %}">
-      <i class="fas fa-robot"></i> Assistant IA
+      <i class="fas fa-robot"></i> AssIA
     </a>
     <a href="{{ url_for('historique') }}" class="nav-link {% if request.endpoint == 'historique' %}active{% endif %}">
       <i class="fas fa-history"></i> Historique
@@ -81,7 +80,7 @@
 <!-- FLOATING MASCOT -->
 <div class="mascot-container" id="mascotContainer">
   <div class="mascot-bubble" id="mascotBubble">
-    <p>Bonjour {{ session.prenom }} ! 👋<br>Je suis votre assistant IA SONACOS.<br>
+    <p>Bonjour {{ session.prenom }} ! 👋<br>Je suis AssIA votre assistant IA SONACOS.<br>
     <a href="{{ url_for('assistant') }}">Posez-moi une question →</a></p>
   </div>
   <div class="mascot-wrapper" onclick="toggleMascotBubble()">
