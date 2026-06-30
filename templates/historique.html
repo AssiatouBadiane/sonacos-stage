@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Historique — SONACOS{% endblock %}
+
+{% block content %}
+<div class="page-historique">
+  <div class="page-header-row">
+    <div>
+      <h1><i class="fas fa-history" style="color:#2d7a27"></i> Historique des conversations</h1>
+      <p>Retrouvez et gérez vos échanges passés avec l'assistant intelligent.</p>
+    </div>
+    <div class="search-input-wrap">
+      <i class="fas fa-search"></i>
+      <input type="text" placeholder="Rechercher par titre ou tag..." id="histSearch" oninput="filterHist(this.value)">
+    </div>
+  </div>
+
+  <div class="conv-history-list" id="convHistList">
+    {% for conv in conversations %}
+    <div class="conv-history-item" data-title="{{ conv.titre|lower }}">
+      <div class="conv-hist-left">
+        <i class="fas fa-comment-dots conv-color-{{ loop.index % 3 }}"></i>
+        <div>
+          <strong>{{ conv.titre }}</strong>
+          <div class="conv-meta">
+            <span>Dernière modification : {{ conv.date }}</span>
+            <span class="msg-count">{{ conv.messages }} MESSAGES</span>
+            <span class="conv-tag">{{ conv.categorie }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="conv-hist-right">
+        <a href="{{ url_for('assistant') }}" class="btn-ouvrir"><i class="fas fa-external-link-alt"></i> Ouvrir</a>
+        <button class="btn-delete-conv" title="Supprimer"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="hist-actions">
+    <button class="btn-export"><i class="fas fa-upload"></i> Exporter tout</button>
+    <button class="btn-clear-all"><i class="fas fa-trash"></i> Effacer tout</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filterHist(val) {
+  document.querySelectorAll('.conv-history-item').forEach(el => {
+    el.style.display = el.dataset.title.includes(val.toLowerCase()) ? 'flex' : 'none';
+  });
+}
+</script>
+{% endblock %}

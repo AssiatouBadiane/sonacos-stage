@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Ajouter un manuel — SONACOS{% endblock %}
+{% block content %}
+<div class="page-form">
+  <a href="{{ url_for('administration') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> Retour</a>
+  <div class="form-card">
+    <h1><i class="fas fa-plus-circle" style="color:#2d7a27"></i> Ajouter un manuel</h1>
+    <form method="POST" enctype="multipart/form-data">
+      <div class="form-group">
+        <label>Titre du manuel</label>
+        <input type="text" name="titre" placeholder="Ex: Manuel des procédures RH" required>
+      </div>
+      <div class="form-group">
+        <label>Catégorie / Service</label>
+        <select name="categorie" required>
+          <option value="">Sélectionner…</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}">{{ cat }}</option>
+          {% endfor %}
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea name="description" rows="4" placeholder="Décrivez le contenu de ce manuel…"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Fichier PDF</label>
+        <div class="file-drop" id="fileDrop" onclick="document.getElementById('pdfInput').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <p>Glisser-déposer ou cliquer pour sélectionner</p>
+          <small>PDF uniquement · max 50 MB</small>
+          <input type="file" id="pdfInput" name="fichier" accept=".pdf" style="display:none" onchange="showFileName(this)">
+        </div>
+        <div id="fileNameDisplay" style="margin-top:.5rem; color:#2d7a27; font-size:.9rem;"></div>
+      </div>
+      <div class="form-actions">
+        <a href="{{ url_for('administration') }}" class="btn-cancel">Annuler</a>
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Enregistrer</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function showFileName(input) {
+  const display = document.getElementById('fileNameDisplay');
+  if (input.files.length > 0) {
+    display.innerHTML = '<i class="fas fa-check-circle"></i> ' + input.files[0].name;
+  }
+}
+// Drag & Drop
+const drop = document.getElementById('fileDrop');
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('drag-over'); });
+drop.addEventListener('dragleave', () => drop.classList.remove('drag-over'));
+drop.addEventListener('drop', e => {
+  e.preventDefault(); drop.classList.remove('drag-over');
+  const input = document.getElementById('pdfInput');
+  input.files = e.dataTransfer.files;
+  showFileName(input);
+});
+</script>
+{% endblock %}

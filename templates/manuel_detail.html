@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ manuel.titre }} — SONACOS{% endblock %}
+{% block content %}
+<div class="page-detail">
+  <a href="{{ url_for('manuels') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> Retour aux manuels</a>
+  <div class="detail-card">
+    <div class="detail-header">
+      <div class="detail-icon"><i class="fas fa-book-open"></i></div>
+      <div>
+        <span class="cat-badge {{ manuel.categorie|lower }}">{{ manuel.categorie }}</span>
+        <h1>{{ manuel.titre }}</h1>
+        <p>{{ manuel.description }}</p>
+        <div class="detail-meta">
+          <span><i class="fas fa-file-pdf"></i> {{ manuel.pages }} pages</span>
+          <span><i class="fas fa-hdd"></i> {{ manuel.taille }}</span>
+          <span><i class="fas fa-calendar"></i> Mis à jour le {{ manuel.date_ajout }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="detail-actions">
+      <a href="#" class="btn-download-lg"><i class="fas fa-download"></i> Télécharger le PDF</a>
+      <a href="{{ url_for('assistant') }}" class="btn-ask-ia"><i class="fas fa-robot"></i> Interroger l'IA sur ce manuel</a>
+    </div>
+  </div>
+
+  <!-- PDF viewer placeholder -->
+  <div class="pdf-viewer-placeholder">
+    <i class="fas fa-file-pdf"></i>
+    <p>Le visualiseur PDF s'affichera ici une fois le fichier uploadé.</p>
+    <small>Fichier : {{ manuel.fichier }}</small>
+  </div>
+</div>
+{% endblock %}

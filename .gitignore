@@ -1,0 +1,37 @@
+# Environnement / secrets
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Environnements virtuels
+venv/
+env/
+.venv/
+ENV/
+
+# Flask / instance
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads utilisateurs (à adapter si tu veux versionner des exemples)
+uploads/*
+!uploads/.gitkeep
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SONACOS — Plateforme Assistant IA</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="landing-body">
+
+<!-- LANDING NAVBAR -->
+<nav class="landing-nav">
+  <div class="landing-logo">
+    <!-- Logo SONACOS SVG inline comme dans l'image 2 -->
+    <div class="landing-logo">
+      <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" height="45">
+    </div>
+  </div>
+  <div class="landing-nav-links">
+    <a href="#" class="nav-link-light active">Accueil</a>
+    <a href="{{ url_for('login') }}" class="btn-connect">Se connecter</a>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+  <div class="hero-content">
+    <h1 class="hero-title">
+      Bienvenue sur la<br>
+      <span class="hero-highlight">plateforme SONACOS</span>
+    </h1>
+    <p class="hero-subtitle">Centralisez, interrogez et optimisez vos<br>processus opérationnels.</p>
+    <a href="{{ url_for('login') }}" class="btn-hero">
+      Se connecter <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+
+  <!-- MASCOT HERO -->
+  <div class="hero-mascot">
+    <div class="mascot-sign">
+      <div class="sign-board">Assistant IA</div>
+    </div>
+    <svg class="hero-mascot-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="hDropGrad" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#FFD700"/>
+          <stop offset="60%" stop-color="#F4A500"/>
+          <stop offset="100%" stop-color="#D4810A"/>
+        </radialGradient>
+      </defs>
+      <ellipse cx="80" cy="196" rx="42" ry="7" fill="rgba(0,0,0,0.12)"/>
+      <path d="M80 12 C80 12, 28 70, 28 115 C28 158, 52 192, 80 192 C108 192, 132 158, 132 115 C132 70, 80 12, 80 12 Z" fill="url(#hDropGrad)"/>
+      <path d="M65 35 C58 52, 46 78, 46 98 C46 108, 49 116, 53 122" stroke="rgba(255,255,200,0.55)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <!-- Yeux -->
+      <circle cx="60" cy="115" r="16" fill="white" stroke="#333" stroke-width="2"/>
+      <circle cx="100" cy="115" r="16" fill="white" stroke="#333" stroke-width="2"/>
+      <circle cx="63" cy="112" r="8" fill="#1a1a2e"/>
+      <circle cx="103" cy="112" r="8" fill="#1a1a2e"/>
+      <circle cx="67" cy="108" r="3.5" fill="white"/>
+      <circle cx="107" cy="108" r="3.5" fill="white"/>
+      <!-- Sourire -->
+      <path d="M60 138 Q80 156 100 138" stroke="#1a1a2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Joues -->
+      <circle cx="44" cy="130" r="10" fill="rgba(255,100,100,0.3)"/>
+      <circle cx="116" cy="130" r="10" fill="rgba(255,100,100,0.3)"/>
+      <!-- Mains -->
+      <ellipse cx="18" cy="130" rx="14" ry="9" fill="url(#hDropGrad)" transform="rotate(-15,18,130)"/>
+      <ellipse cx="142" cy="130" rx="14" ry="9" fill="url(#hDropGrad)" transform="rotate(15,142,130)"/>
+    </svg>
+  </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features-section">
+  <div class="feature-card">
+    <div class="feature-icon green">
+      <i class="fas fa-file-alt"></i>
+    </div>
+    <h3>Manuels disponibles</h3>
+    <p>Accédez à tous les manuels de procédures de l'entreprise</p>
+    <a href="{{ url_for('login') }}" class="btn-feature green">Consulter <i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon yellow">
+      <i class="fas fa-comments"></i>
+    </div>
+    <h3>Assistant IA</h3>
+    <p>Posez vos questions en langage naturel et obtenez des réponses précises</p>
+    <a href="{{ url_for('login') }}" class="btn-feature yellow">Interroger <i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-icon red">
+      <i class="fas fa-question-circle"></i>
+    </div>
+    <h3>Questions fréquentes</h3>
+    <p>Retrouvez les réponses aux questions les plus posées par les employés</p>
+    <a href="{{ url_for('login') }}" class="btn-feature red">Découvrir <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="landing-footer">
+  <div class="footer-brand">
+    <svg viewBox="0 0 40 40" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+      <rect width="40" height="40" rx="10" fill="#2d7a27"/>
+      <text x="20" y="28" text-anchor="middle" font-family="Inter" font-weight="800" font-size="18" fill="white">S</text>
+    </svg>
+    <div>
+      <strong>SONACOS</strong>
+      <p>Plateforme intelligente d'assistance documentaire</p>
+      <small>Développé par <em>Assiatou Badiane</em> — Stagiaire Génie Logiciel &amp; SI</small>
+    </div>
+  </div>
+  <div class="footer-nav">
+    <strong>Navigation</strong>
+    <a href="#">› Accueil</a>
+    <a href="{{ url_for('login') }}">› Assistant IA</a>
+    <a href="{{ url_for('login') }}">› Manuels</a>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 SONACOS — Plateforme Assistant IA</p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}FAQ — SONACOS{% endblock %}
+{% block content %}
+<div class="page-faq">
+  <h1><i class="fas fa-question-circle" style="color:#2d7a27"></i> Questions fréquentes</h1>
+  <p>Retrouvez les réponses aux questions les plus posées par les employés.</p>
+  <div class="faq-list">
+    {% for f in faqs %}
+    <div class="faq-accordion">
+      <button class="faq-acc-btn" onclick="toggleFaq(this)">
+        <span>{{ f.question }}</span>
+        <i class="fas fa-chevron-down"></i>
+      </button>
+      <div class="faq-acc-body">
+        <p>{{ f.reponse }}</p>
+        <span class="faq-source"><i class="fas fa-file-alt"></i> {{ f.source }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+function toggleFaq(btn) {
+  const body = btn.nextElementSibling;
+  const icon = btn.querySelector('i');
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+  icon.style.transform = body.style.display === 'block' ? 'rotate(180deg)' : '';
+}
+</script>
+{% endblock %}

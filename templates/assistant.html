@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Assistant IA — SONACOS{% endblock %}
+
+{% block content %}
+<div class="assistant-layout">
+
+  <!-- SIDEBAR CONVERSATIONS -->
+  <aside class="chat-sidebar">
+    <div class="sidebar-header">
+      <i class="fas fa-arrow-left sidebar-back" onclick="history.back()"></i>
+      <span>Conversations</span>
+    </div>
+    <button class="btn-new-conv" onclick="newConversation()">
+      <i class="fas fa-plus"></i> Nouvelle question
+    </button>
+    <div class="sidebar-section-label">HISTORIQUE</div>
+    <ul class="conv-list" id="convList">
+      {% for conv in conversations %}
+      <li class="conv-item" onclick="loadConv({{ conv.id }})">
+        <i class="fas fa-comment-dots"></i>
+        <span>{{ conv.titre }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+
+    <div class="sidebar-bottom">
+      <button class="btn-icon-sm"><i class="fas fa-sliders-h"></i></button>
+      <button class="btn-icon-sm"><i class="fas fa-font"></i></button>
+      <button class="btn-icon-sm"><i class="fas fa-paperclip"></i></button>
+      <button class="btn-icon-sm"><i class="fas fa-square"></i></button>
+      <button class="btn-icon-sm"><i class="fas fa-ellipsis-h"></i></button>
+      <button class="btn-icon-sm"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </aside>
+
+  <!-- CHAT MAIN -->
+  <div class="chat-main">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <div class="ai-status-dot"></div>
+        <span>Assistant IA — Llama 3</span>
+        <span class="status-online">● En ligne</span>
+      </div>
+      <div class="chat-header-actions">
+        <button class="btn-chat-action" onclick="newConversation()"><i class="fas fa-sync-alt"></i> Nouvelle discussion</button>
+        <button class="btn-chat-action"><i class="fas fa-save"></i> Sauvegarder</button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <!-- Message initial IA -->
+      <div class="msg msg-ai">
+        <div class="msg-avatar ai-avatar">
+          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="20" fill="#2d7a27"/>
+            <path d="M20 5 C20 5, 8 16, 8 24 C8 32, 13 37, 20 37 C27 37, 32 32, 32 24 C32 16, 20 5, 20 5 Z" fill="#FFD700"/>
+            <circle cx="15" cy="23" r="4" fill="white"/><circle cx="25" cy="23" r="4" fill="white"/>
+            <circle cx="16" cy="22" r="2" fill="#1a1a2e"/><circle cx="26" cy="22" r="2" fill="#1a1a2e"/>
+          </svg>
+        </div>
+        <div class="msg-bubble">
+          <p>Bonjour {{ session.prenom }} ! Je suis votre assistant SONACOS. Comment puis-je vous aider dans vos démarches aujourd'hui ?</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea id="userInput" placeholder="Posez votre question..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+        oninput="autoResize(this)"></textarea>
+      <button class="btn-attach" title="Joindre un fichier"><i class="fas fa-paperclip"></i></button>
+      <button class="btn-send" id="sendBtn" onclick="sendMessage()">
+        <i class="fas fa-paper-plane"></i>
+      </button>
+    </div>
+    <div class="chat-disclaimer">
+      <i class="fas fa-bolt"></i> Réponse basée sur les manuels officiels de la SONACOS
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const prenom = "{{ session.prenom }}";
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 150) + 'px';
+}
+
+function newConversation() {
+  const messages = document.getElementById('chatMessages');
+  messages.innerHTML = `
+    <div class="msg msg-ai">
+      <div class="msg-avatar ai-avatar">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="20" fill="#2d7a27"/>
+          <path d="M20 5 C20 5, 8 16, 8 24 C8 32, 13 37, 20 37 C27 37, 32 32, 32 24 C32 16, 20 5, 20 5 Z" fill="#FFD700"/>
+          <circle cx="15" cy="23" r="4" fill="white"/><circle cx="25" cy="23" r="4" fill="white"/>
+          <circle cx="16" cy="22" r="2" fill="#1a1a2e"/><circle cx="26" cy="22" r="2" fill="#1a1a2e"/>
+        </svg>
+      </div>
+      <div class="msg-bubble"><p>Nouvelle conversation démarrée. Comment puis-je vous aider ?</p></div>
+    </div>`;
+}
+
+function loadConv(id) {
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+async function sendMessage() {
+  const input = document.getElementById('userInput');
+  const question = input.value.trim();
+  if (!question) return;
+
+  const messages = document.getElementById('chatMessages');
+  const btn = document.getElementById('sendBtn');
+
+  // Afficher message utilisateur
+  messages.innerHTML += `
+    <div class="msg msg-user">
+      <div class="msg-bubble user-bubble"><p>${escapeHtml(question)}</p></div>
+      <div class="msg-avatar user-avatar">${prenom[0].toUpperCase()}</div>
+    </div>`;
+
+  input.value = '';
+  input.style.height = 'auto';
+  btn.disabled = true;
+
+  // Indicateur de frappe
+  const typingId = 'typing-' + Date.now();
+  messages.innerHTML += `
+    <div class="msg msg-ai" id="${typingId}">
+      <div class="msg-avatar ai-avatar">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="20" fill="#2d7a27"/>
+          <path d="M20 5 C20 5, 8 16, 8 24 C8 32, 13 37, 20 37 C27 37, 32 32, 32 24 C32 16, 20 5, 20 5 Z" fill="#FFD700"/>
+          <circle cx="15" cy="23" r="4" fill="white"/><circle cx="25" cy="23" r="4" fill="white"/>
+          <circle cx="16" cy="22" r="2" fill="#1a1a2e"/><circle cx="26" cy="22" r="2" fill="#1a1a2e"/>
+        </svg>
+      </div>
+      <div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+    </div>`;
+  messages.scrollTop = messages.scrollHeight;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({question})
+    });
+    const data = await res.json();
+
+    // Formater réponse
+    const formattedReponse = data.reponse.replace(/\n/g, '<br>');
+    const sourcesHtml = data.sources ? data.sources.map(s =>
+      `<span class="source-chip"><i class="fas fa-file-alt"></i> ${s.manuel}${s.page !== '-' ? ' — p. ' + s.page : ''}</span>`
+    ).join('') : '';
+
+    document.getElementById(typingId).outerHTML = `
+      <div class="msg msg-ai">
+        <div class="msg-avatar ai-avatar">
+          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="20" fill="#2d7a27"/>
+            <path d="M20 5 C20 5, 8 16, 8 24 C8 32, 13 37, 20 37 C27 37, 32 32, 32 24 C32 16, 20 5, 20 5 Z" fill="#FFD700"/>
+            <circle cx="15" cy="23" r="4" fill="white"/><circle cx="25" cy="23" r="4" fill="white"/>
+            <circle cx="16" cy="22" r="2" fill="#1a1a2e"/><circle cx="26" cy="22" r="2" fill="#1a1a2e"/>
+          </svg>
+        </div>
+        <div class="msg-bubble">
+          <div class="msg-title"><i class="fas fa-check-square"></i> Réponse</div>
+          <p>${formattedReponse}</p>
+          ${sourcesHtml ? `<div class="sources-section"><strong>Références documentaires</strong><div class="sources-chips">${sourcesHtml}</div></div>` : ''}
+        </div>
+      </div>`;
+  } catch(e) {
+    document.getElementById(typingId).remove();
+    messages.innerHTML += `<div class="msg msg-ai"><div class="msg-bubble error-bubble"><p>Erreur de connexion à l'assistant.</p></div></div>`;
+  }
+
+  btn.disabled = false;
+  messages.scrollTop = messages.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.appendChild(document.createTextNode(text));
+  return div.innerHTML;
+}
+</script>
+{% endblock %}

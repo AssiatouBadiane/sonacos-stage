@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Accueil — SONACOS{% endblock %}
+
+{% block content %}
+<div class="page-accueil">
+
+  <!-- HERO BANNER -->
+  <section class="dashboard-hero">
+    <div class="hero-text">
+      <div class="hero-badge">SONACOS · Transformation Numérique</div>
+      <h1>Bienvenue sur la plateforme<br><span class="green-text">SONACOS Procédures</span></h1>
+      <p>Centralisez, interrogez et optimisez vos processus opérationnels grâce à notre assistant intelligent alimenté par l'intelligence artificielle de pointe.</p>
+      <a href="{{ url_for('assistant') }}" class="btn-primary-lg">
+        <i class="fas fa-comment-dots"></i> Poser une question à l'IA
+      </a>
+    </div>
+  </section>
+
+  <!-- STATS CARDS -->
+  <section class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
+      <div class="stat-badge green">Actif</div>
+      <div class="stat-number">{{ stats.manuels_publies }}</div>
+      <div class="stat-label"><i class="fas fa-circle green-dot"></i> Manuels disponibles</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-book-open"></i></div>
+      <div class="stat-badge blue">Indexé</div>
+      <div class="stat-number">1 230</div>
+      <div class="stat-label"><i class="fas fa-circle blue-dot"></i> Pages indexées</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+      <div class="stat-badge green">+2%</div>
+      <div class="stat-number">98%</div>
+      <div class="stat-label"><i class="fas fa-check green-dot"></i> Précision des réponses</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="fas fa-users"></i></div>
+      <div class="stat-badge orange">Live</div>
+      <div class="stat-number">{{ stats.utilisateurs_actifs }}</div>
+      <div class="stat-label"><i class="fas fa-circle orange-dot"></i> Utilisateurs actifs</div>
+    </div>
+  </section>
+
+  <!-- TECHNOLOGIES -->
+  <section class="tech-section">
+    <h3><i class="fas fa-microchip"></i> Technologies utilisées</h3>
+    <div class="tech-tags">
+      {% for tech in ['HTML5','CSS3','JavaScript','Python/Flask','MySQL','Groq API','Llama 3','Système RAG'] %}
+      <span class="tech-tag">{{ tech }}</span>
+      {% endfor %}
+    </div>
+  </section>
+
+  <!-- FAQ PREVIEW -->
+  <section class="faq-preview">
+    <div class="section-header">
+      <h2>Questions fréquentes</h2>
+      <a href="{{ url_for('faq') }}" class="btn-outline">Voir tout <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="faq-grid">
+      {% for f in faq %}
+      <div class="faq-card">
+        <div class="faq-q"><i class="fas fa-question-circle"></i> {{ f.question }}</div>
+        <div class="faq-a">{{ f.reponse[:120] }}…</div>
+        <span class="faq-source"><i class="fas fa-file"></i> {{ f.source }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

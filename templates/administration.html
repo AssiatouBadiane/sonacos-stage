@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block title %}Administration — SONACOS{% endblock %}
+
+{% block content %}
+<div class="page-admin">
+  <h1><i class="fas fa-cog" style="color:#2d7a27"></i> Administration</h1>
+  <p class="page-subtitle">Gestion centralisée de la plateforme</p>
+
+  <!-- STATS CARDS -->
+  <div class="admin-stats-grid">
+    <div class="admin-stat-card">
+      <div class="astat-header">
+        <span>Utilisateurs actifs</span>
+        <span class="trend green">↗ +12%</span>
+      </div>
+      <div class="astat-number">{{ stats.utilisateurs_actifs }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <div class="astat-header">
+        <span>Manuels publiés</span>
+        <span class="trend green">↗ +3</span>
+      </div>
+      <div class="astat-number">{{ stats.manuels_publies }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <div class="astat-header">
+        <span>Questions au chatbot</span>
+        <span class="trend green">↗ +24%</span>
+      </div>
+      <div class="astat-number">{{ "{:,}".format(stats.questions_chatbot) }}</div>
+    </div>
+    <div class="admin-stat-card">
+      <div class="astat-header">
+        <span>Chunks indexés</span>
+      </div>
+      <div class="astat-number">{{ "{:,}".format(stats.chunks_indexes) }}</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="admin-tabs">
+    <button class="tab-btn active" onclick="showTab('utilisateurs', this)"><i class="fas fa-users"></i> Utilisateurs</button>
+    <button class="tab-btn" onclick="showTab('manuels', this)"><i class="fas fa-file-alt"></i> Manuels</button>
+    <button class="tab-btn" onclick="showTab('stats', this)"><i class="fas fa-chart-bar"></i> Statistiques</button>
+    <button class="tab-btn" onclick="showTab('params', this)"><i class="fas fa-sliders-h"></i> Paramètres</button>
+  </div>
+
+  <!-- TAB: UTILISATEURS -->
+  <div class="tab-panel active" id="tab-utilisateurs">
+    <div class="panel-header">
+      <div>
+        <strong>Gestion des utilisateurs</strong>
+        <p>Comptes, rôles et permissions</p>
+      </div>
+      <button class="btn-add"><i class="fas fa-plus"></i> Nouvel utilisateur</button>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>NOM</th><th>EMAIL</th><th>RÔLE</th><th>ACTIONS</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td><strong>{{ u.prenom }} {{ u.nom }}</strong></td>
+          <td>{{ u.email }}</td>
+          <td><span class="role-badge {{ u.role }}">{{ u.role|capitalize }}</span></td>
+          <td>
+            {% if u.id_utilisateur != session.get('user_id') %}
+            <form method="POST" action="{{ url_for('supprimer_utilisateur', id=u.id_utilisateur) }}" style="display:inline" onsubmit="return confirm('Supprimer cet utilisateur ?')">
+              <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
+            </form>
+            {% else %}
+            <span style="color:#999;">Vous</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB: MANUELS -->
+  <div class="tab-panel" id="tab-manuels">
+    <div class="panel-header">
+      <div>
+        <strong>Gestion des manuels</strong>
+        <p>Base documentaire technique et opérationnelle</p>
+      </div>
+      <a href="{{ url_for('ajouter_manuel') }}" class="btn-add"><i class="fas fa-plus"></i> Ajouter un manuel</a>
+    </div>
+    <table class="admin-table">
+      <thead>
+        <tr><th>TITRE</th><th>CATÉGORIE</th><th>PAGES</th><th>DATE</th><th>ACTIONS</th></tr>
+      </thead>
+      <tbody>
+        {% for m in manuels %}
+        <tr>
+          <td><strong>{{ m.titre }}</strong></td>
+          <td><span class="cat-badge {{ m.categorie|lower }}">{{ m.categorie }}</span></td>
+          <td>{{ m.pages }}</td>
+          <td>{{ m.date_ajout }}</td>
+          <td>
+            <a href="{{ url_for('manuel_detail', id=m.id) }}" class="btn-icon-sm" title="Voir"><i class="fas fa-eye"></i></a>
+            <form method="POST" action="{{ url_for('supprimer_manuel', id=m.id) }}" style="display:inline" onsubmit="return confirm('Supprimer ce manuel ?')">
+              <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- TAB: STATS -->
+  <div class="tab-panel" id="tab-stats">
+    <p style="padding:2rem; color:#666;">Graphiques et statistiques — intégrer Chart.js ici.</p>
+  </div>
+
+  <!-- TAB: PARAMS -->
+  <div class="tab-panel" id="tab-params">
+    <p style="padding:2rem; color:#666;">Paramètres système — intégration Groq API key, configuration RAG, etc.</p>
+  </div>
+
+  <!-- PLATFORM STATUS -->
+  <div class="platform-status">
+    <div class="status-left">
+      <div class="status-dot-green"></div>
+      <div>
+        <strong>État de la plateforme</strong>
+        <p>Tous les services sont opérationnels. Dernière synchronisation il y a 5 minutes.</p>
+      </div>
+    </div>
+    <button class="btn-restart"><i class="fas fa-sync-alt"></i> Redémarrer les services</button>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

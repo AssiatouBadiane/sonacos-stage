@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Manuels — SONACOS{% endblock %}
+
+{% block content %}
+<div class="page-manuels">
+
+  <div class="page-header-row">
+    <div>
+      <h1><i class="fas fa-book" style="color:#2d7a27"></i> Manuels de procédures</h1>
+      <p>Accédez à l'ensemble des référentiels opérationnels et guides méthodologiques de la SONACOS.</p>
+    </div>
+    <div class="filter-bar">
+      <form method="GET" action="{{ url_for('manuels') }}" class="search-form">
+        <div class="search-input-wrap">
+          <i class="fas fa-search"></i>
+          <input type="text" name="search" placeholder="Rechercher un manuel..." value="{{ request.args.get('search','') }}">
+        </div>
+        <select name="categorie" onchange="this.form.submit()">
+          <option value="">Tous les services ▾</option>
+          {% for cat in categories %}
+          <option value="{{ cat }}" {% if categorie_active == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </form>
+    </div>
+  </div>
+
+  <div class="manuels-grid">
+    {% for m in manuels %}
+    <div class="manuel-card">
+      <div class="manuel-card-top">
+        <div class="manuel-icon"><i class="fas fa-book-open"></i></div>
+        <span class="cat-badge {{ m.categorie|lower }}">{{ m.categorie }}</span>
+      </div>
+      <h3>{{ m.titre }}</h3>
+      <p>{{ m.description }}</p>
+      <div class="manuel-meta">
+        <i class="fas fa-file-pdf"></i> {{ m.pages }} pages · PDF · {{ m.taille }}
+        <span class="manuel-date">Mis à jour le {{ m.date_ajout }}</span>
+      </div>
+      <div class="manuel-actions">
+        <a href="{{ url_for('manuel_detail', id=m.id) }}" class="btn-consult">
+          <i class="fas fa-eye"></i> Consulter
+        </a>
+        <a href="#" class="btn-download">
+          <i class="fas fa-download"></i> Télécharger
+        </a>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-search"></i>
+      <p>Aucun manuel trouvé.</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- CTA BOTTOM -->
+  <div class="manuels-cta">
+    <div class="cta-text">
+      <h3>Besoin d'un manuel spécifique ?</h3>
+      <p>Si vous ne trouvez pas le document nécessaire à votre mission, vous pouvez effectuer une demande auprès du département Qualité ou utiliser l'assistant IA.</p>
+      <div class="cta-buttons">
+        <button class="btn-outline-green">Contacter Qualité</button>
+        <a href="{{ url_for('faq') }}" class="btn-outline-dark">Consulter les FAQ</a>
+      </div>
+    </div>
+    <div class="cta-image">
+      <i class="fas fa-archive" style="font-size:6rem; color:#ddd;"></i>
+    </div>
+  </div>
+</div>
+{% endblock %}
