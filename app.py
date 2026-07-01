@@ -168,6 +168,29 @@ def historique():
     conversations = Conversation.query.filter_by(id_utilisateur=session['user_id']).order_by(Conversation.date_creation.desc()).all()
     return render_template('historique.html', conversations=conversations)
 
+@app.route('/historique/effacer-tout', methods=['POST'])
+@login_required
+def effacer_historique():
+    conversations = Conversation.query.filter_by(id_utilisateur=session['user_id']).all()
+    for conv in conversations:
+        Interaction.query.filter_by(id_conversation=conv.id_conversation).delete()
+    Conversation.query.filter_by(id_utilisateur=session['user_id']).delete()
+    db.session.commit()
+    flash("Tout l'historique a été effacé.", 'success')
+    return redirect(url_for('historique'))
+
+@app.route('/historique/supprimer/<int:id>', methods=['POST'])
+@login_required
+def supprimer_conversation(id):
+    conv = Conversation.query.get_or_404(id)
+    if conv.id_utilisateur != session['user_id']:
+        flash('Action non autorisée.', 'error')
+        return redirect(url_for('historique'))
+    Interaction.query.filter_by(id_conversation=conv.id_conversation).delete()
+    db.session.delete(conv)
+    db.session.commit()
+    flash('Conversation supprimée.', 'success')
+    return redirect(url_for('historique'))
 
 @app.route('/faq')
 @login_required
@@ -231,6 +254,26 @@ def ajouter_manuel():
 
     categories = sorted(set(m.categorie for m in Manuel.query.all() if m.categorie))
     return render_template('ajouter_manuel.html', categories=categories)
+
+@app.route('/administration/ajouter-utilisateur', methods=['GET', 'POST'])
+@admin_required
+def ajouter_utilisateur():
+    if request.method == 'POST':
+        nom = request.form.get('nom')
+        prenom = request.form.get('prenom')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        role = request.form.get('role', 'employe')
+        if User.query.filter_by(email=email).first():
+            flash('Cet email est déjà utilisé.', 'error')
+        else:
+            user = User(nom=nom, prenom=prenom, email=email, role=role)
+            user.set_password(password)
+            db.session.add(user)
+            db.session.commit()
+            flash(f'Utilisateur {prenom} {nom} créé avec succès.', 'success')
+            return redirect(url_for('administration'))
+    return render_template('ajouter_utilisateur.html')
 
 
 @app.route('/administration/supprimer-manuel/<int:id>', methods=['POST'])

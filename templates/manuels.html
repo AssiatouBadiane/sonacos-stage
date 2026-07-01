@@ -42,7 +42,7 @@
         <a href="{{ url_for('manuel_detail', id=m.id) }}" class="btn-consult">
           <i class="fas fa-eye"></i> Consulter
         </a>
-        <a href="#" class="btn-download">
+        <a href="{{ url_for('uploaded_file', filename=m.chemin_fichier|replace('uploads/', '')|replace('uploads\\', '')) }}" class="btn-download" target="_blank">
           <i class="fas fa-download"></i> Télécharger
         </a>
       </div>

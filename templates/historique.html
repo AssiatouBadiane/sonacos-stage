@@ -14,32 +14,41 @@
     </div>
   </div>
 
-  <div class="conv-history-list" id="convHistList">
-    {% for conv in conversations %}
-    <div class="conv-history-item" data-title="{{ conv.titre|lower }}">
-      <div class="conv-hist-left">
-        <i class="fas fa-comment-dots conv-color-{{ loop.index % 3 }}"></i>
-        <div>
-          <strong>{{ conv.titre }}</strong>
-          <div class="conv-meta">
-            <span>Dernière modification : {{ conv.date }}</span>
-            <span class="msg-count">{{ conv.messages }} MESSAGES</span>
-            <span class="conv-tag">{{ conv.categorie }}</span>
-          </div>
+ <div class="conv-history-list" id="convHistList">
+  {% for conv in conversations %}
+  <div class="conv-history-item" data-title="{{ conv.titre|lower }}">
+    <div class="conv-hist-left">
+      <i class="fas fa-comment-dots conv-color-{{ loop.index % 3 }}"></i>
+      <div>
+        <strong>{{ conv.titre }}</strong>
+        <div class="conv-meta">
+          <span>Créée le : {{ conv.date_creation.strftime('%d/%m/%Y %H:%M') }}</span>
+          <span class="msg-count">{{ conv.interactions|length }} MESSAGES</span>
         </div>
       </div>
-      <div class="conv-hist-right">
-        <a href="{{ url_for('assistant') }}" class="btn-ouvrir"><i class="fas fa-external-link-alt"></i> Ouvrir</a>
-        <button class="btn-delete-conv" title="Supprimer"><i class="fas fa-trash"></i></button>
-      </div>
     </div>
-    {% endfor %}
+    <div class="conv-hist-right">
+      <a href="{{ url_for('assistant') }}" class="btn-ouvrir">
+        <i class="fas fa-external-link-alt"></i> Ouvrir
+      </a>
+      <form method="POST" action="{{ url_for('supprimer_conversation', id=conv.id_conversation) }}"
+            style="display:inline" onsubmit="return confirm('Supprimer cette conversation ?')">
+        <button type="submit" class="btn-delete-conv" title="Supprimer">
+          <i class="fas fa-trash"></i>
+        </button>
+      </form>
+    </div>
   </div>
+  {% endfor %}
+</div>
 
   <div class="hist-actions">
-    <button class="btn-export"><i class="fas fa-upload"></i> Exporter tout</button>
-    <button class="btn-clear-all"><i class="fas fa-trash"></i> Effacer tout</button>
-  </div>
+  <form method="POST" action="{{ url_for('effacer_historique') }}" 
+        onsubmit="return confirm('Effacer tout l\'historique ? Cette action est irréversible.')">
+    <button type="submit" class="btn-clear-all">
+      <i class="fas fa-trash"></i> Effacer tout
+    </button>
+  </form>
 </div>
 {% endblock %}
 
