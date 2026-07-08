@@ -7,7 +7,7 @@
   <!-- HERO BANNER -->
   <section class="dashboard-hero">
     <div class="hero-text">
-      <div class="hero-badge">SONACOS · Transformation Numérique</div>
+      <div class="hero-badge">SONACOS · Digitalisation des documents & IA</div>
       <h1>Bienvenue sur la plateforme<br><span class="green-text">SONACOS Procédures</span></h1>
       <p>Centralisez, interrogez et optimisez vos processus opérationnels grâce à notre assistant intelligent alimenté par l'intelligence artificielle de pointe.</p>
       <a href="{{ url_for('assistant') }}" class="btn-primary-lg">
@@ -41,16 +41,6 @@
       <div class="stat-badge orange">Live</div>
       <div class="stat-number">{{ stats.utilisateurs_actifs }}</div>
       <div class="stat-label"><i class="fas fa-circle orange-dot"></i> Utilisateurs actifs</div>
-    </div>
-  </section>
-
-  <!-- TECHNOLOGIES -->
-  <section class="tech-section">
-    <h3><i class="fas fa-microchip"></i> Technologies utilisées</h3>
-    <div class="tech-tags">
-      {% for tech in ['HTML5','CSS3','JavaScript','Python/Flask','MySQL','Groq API','Llama 3','Système RAG'] %}
-      <span class="tech-tag">{{ tech }}</span>
-      {% endfor %}
     </div>
   </section>
 

@@ -15,22 +15,20 @@
     </button>
     <div class="sidebar-section-label">HISTORIQUE</div>
     <ul class="conv-list" id="convList">
-      {% for conv in conversations %}
-      <li class="conv-item" onclick="loadConv({{ conv.id }})">
-        <i class="fas fa-comment-dots"></i>
-        <span>{{ conv.titre }}</span>
-      </li>
-      {% endfor %}
-    </ul>
-
-    <div class="sidebar-bottom">
-      <button class="btn-icon-sm"><i class="fas fa-sliders-h"></i></button>
-      <button class="btn-icon-sm"><i class="fas fa-font"></i></button>
-      <button class="btn-icon-sm"><i class="fas fa-paperclip"></i></button>
-      <button class="btn-icon-sm"><i class="fas fa-square"></i></button>
-      <button class="btn-icon-sm"><i class="fas fa-ellipsis-h"></i></button>
-      <button class="btn-icon-sm"><i class="fas fa-chevron-right"></i></button>
-    </div>
+  {% for conv in conversations %}
+  <li class="conv-item" id="conv-{{ conv.id_conversation }}">
+    <span onclick="loadConv({{ conv.id_conversation }})" style="flex:1; cursor:pointer;">
+      <i class="fas fa-comment-dots"></i> {{ conv.titre }}
+    </span>
+    <form method="POST" action="{{ url_for('supprimer_conversation', id=conv.id_conversation) }}"
+          style="display:inline" onsubmit="return confirm('Supprimer cette conversation ?')">
+      <button type="submit" class="btn-delete-sidebar" title="Supprimer">
+        <i class="fas fa-trash"></i>
+      </button>
+    </form>
+  </li>
+  {% endfor %}
+</ul>
   </aside>
 
   <!-- CHAT MAIN -->
@@ -43,7 +41,7 @@
       </div>
       <div class="chat-header-actions">
         <button class="btn-chat-action" onclick="newConversation()"><i class="fas fa-sync-alt"></i> Nouvelle discussion</button>
-        <button class="btn-chat-action"><i class="fas fa-save"></i> Sauvegarder</button>
+        
       </div>
     </div>
 
@@ -105,9 +103,47 @@ function newConversation() {
     </div>`;
 }
 
-function loadConv(id) {
+async function loadConv(id) {
   document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  document.getElementById('conv-' + id).classList.add('active');
+
+  const messages = document.getElementById('chatMessages');
+  messages.innerHTML = '<div style="text-align:center; padding:2rem; color:#999;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+
+  try {
+    const res = await fetch(`/api/conversation/${id}`);
+    const data = await res.json();
+
+    const aiAvatar = `<div class="msg-avatar ai-avatar">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="20" cy="20" r="20" fill="#2d7a27"/>
+        <path d="M20 5 C20 5, 8 16, 8 24 C8 32, 13 37, 20 37 C27 37, 32 32, 32 24 C32 16, 20 5, 20 5 Z" fill="#FFD700"/>
+        <circle cx="15" cy="23" r="4" fill="white"/><circle cx="25" cy="23" r="4" fill="white"/>
+        <circle cx="16" cy="22" r="2" fill="#1a1a2e"/><circle cx="26" cy="22" r="2" fill="#1a1a2e"/>
+      </svg>
+    </div>`;
+
+    let html = '';
+    data.messages.forEach(m => {
+      html += `
+        <div class="msg msg-user">
+          <div class="msg-bubble user-bubble"><p>${escapeHtml(m.question)}</p></div>
+          <div class="msg-avatar user-avatar">${prenom[0].toUpperCase()}</div>
+        </div>
+        <div class="msg msg-ai">
+          ${aiAvatar}
+          <div class="msg-bubble">
+            <div class="msg-title"><i class="fas fa-check-square"></i> Réponse</div>
+            <p>${m.reponse.replace(/\n/g, '<br>')}</p>
+          </div>
+        </div>`;
+    });
+
+    messages.innerHTML = html || '<div style="text-align:center; padding:2rem; color:#999;">Aucun message dans cette conversation.</div>';
+    messages.scrollTop = messages.scrollHeight;
+  } catch(e) {
+    messages.innerHTML = '<div style="text-align:center; padding:2rem; color:#e53e3e;">Erreur de chargement.</div>';
+  }
 }
 
 async function sendMessage() {
@@ -145,11 +181,12 @@ async function sendMessage() {
     </div>`;
   messages.scrollTop = messages.scrollHeight;
 
-  try {
+ try {
+    const langue = localStorage.getItem('langue') || 'fr';
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({question})
+      body: JSON.stringify({question, langue})
     });
     const data = await res.json();
 
@@ -177,7 +214,8 @@ async function sendMessage() {
       </div>`;
   } catch(e) {
     document.getElementById(typingId).remove();
-    messages.innerHTML += `<div class="msg msg-ai"><div class="msg-bubble error-bubble"><p>Erreur de connexion à l'assistant.</p></div></div>`;
+    console.error(e);
+    messages.innerHTML += `<div class="msg msg-ai"><div class="msg-bubble error-bubble"><p>Erreur : ${e.message}</p></div></div>`;
   }
 
   btn.disabled = false;

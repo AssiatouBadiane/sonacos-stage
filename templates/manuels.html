@@ -16,7 +16,6 @@
           <input type="text" name="search" placeholder="Rechercher un manuel..." value="{{ request.args.get('search','') }}">
         </div>
         <select name="categorie" onchange="this.form.submit()">
-          <option value="">Tous les services ▾</option>
           {% for cat in categories %}
           <option value="{{ cat }}" {% if categorie_active == cat %}selected{% endif %}>{{ cat }}</option>
           {% endfor %}
@@ -61,7 +60,6 @@
       <h3>Besoin d'un manuel spécifique ?</h3>
       <p>Si vous ne trouvez pas le document nécessaire à votre mission, vous pouvez effectuer une demande auprès du département Qualité ou utiliser l'assistant IA.</p>
       <div class="cta-buttons">
-        <button class="btn-outline-green">Contacter Qualité</button>
         <a href="{{ url_for('faq') }}" class="btn-outline-dark">Consulter les FAQ</a>
       </div>
     </div>

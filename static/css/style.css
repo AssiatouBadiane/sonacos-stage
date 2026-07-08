@@ -750,3 +750,155 @@ a { text-decoration: none; color: inherit; }
   .page-accueil, .page-manuels, .page-admin, .page-historique, .page-faq { padding: 1rem; }
   .dashboard-hero { padding: 1.5rem; }
 }
+
+.pdf-viewer-container {
+  margin-top: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.pdf-toolbar {
+  background: #2d7a27;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pdf-search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255,255,255,0.15);
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+}
+
+.pdf-search input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  width: 220px;
+  font-size: 0.875rem;
+}
+
+.pdf-search input::placeholder { color: rgba(255,255,255,0.7); }
+
+.btn-search-pdf {
+  background: white;
+  color: #2d7a27;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.btn-search-pdf:hover {
+  background: #f0f0f0;
+}
+
+.params-section { padding: 1.5rem; }
+.param-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+}
+.param-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.param-info p { color: #666; font-size: .875rem; margin-top: .2rem; }
+.btn-danger {
+  background: #e53e3e;
+  color: white;
+  border: none;
+  padding: .6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: .875rem;
+}
+.btn-danger:hover { background: #c53030; }
+
+.conv-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.btn-delete-sidebar {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.conv-item:hover .btn-delete-sidebar {
+  opacity: 1;
+  color: #ff6b6b;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #ccc;
+  border-radius: 28px;
+  transition: .3s;
+}
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 20px; width: 20px;
+  left: 4px; bottom: 4px;
+  background: white;
+  border-radius: 50%;
+  transition: .3s;
+}
+.toggle-switch input:checked + .toggle-slider { background: #2d7a27; }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(24px); }
+
+.select-langue {
+  padding: 0.5rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  outline: none;
+}
+
+body.dark-mode {
+  background: #1a1a2e;
+  color: #e0e0e0;
+}
+body.dark-mode .navbar { background: #16213e; }
+body.dark-mode .admin-stat-card,
+body.dark-mode .param-card,
+body.dark-mode .tab-panel { background: #16213e; border-color: #2d2d4e; }
+body.dark-mode .admin-table thead { background: #2d2d4e; }
+body.dark-mode .admin-table tbody tr:hover { background: #2d2d4e; }

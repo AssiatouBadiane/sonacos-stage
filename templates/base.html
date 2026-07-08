@@ -7,6 +7,73 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* ===== MODALE DE CONFIRMATION CUSTOM ===== */
+    .custom-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+    }
+    .custom-modal-overlay.active {
+      display: flex;
+    }
+    .custom-modal {
+      background: #fff;
+      border-radius: 14px;
+      padding: 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+      animation: modalPop 0.2s ease;
+    }
+    @keyframes modalPop {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .custom-modal-icon {
+      font-size: 2.2rem;
+      color: #e0a800;
+      margin-bottom: 0.8rem;
+    }
+    .custom-modal-message {
+      font-size: 1rem;
+      color: #2b2b2b;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+    .custom-modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+    }
+    .btn-modal-cancel, .btn-modal-confirm {
+      padding: 0.6rem 1.4rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: transform 0.1s ease, opacity 0.2s ease;
+    }
+    .btn-modal-cancel {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .btn-modal-confirm {
+      background: #d9363e;
+      color: #fff;
+    }
+    .btn-modal-cancel:hover, .btn-modal-confirm:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+  </style>
 </head>
 <body class="{% block body_class %}{% endblock %}">
 
@@ -40,12 +107,6 @@
   </div>
 
   <div class="nav-right">
-    <div class="nav-search">
-      <i class="fas fa-search"></i>
-      <input type="text" placeholder="Rechercher..." id="globalSearch">
-    </div>
-    <button class="btn-icon"><i class="fas fa-bell"></i></button>
-    <button class="btn-icon"><i class="fas fa-cog"></i></button>
     <div class="user-avatar" title="{{ session.prenom }} {{ session.nom }}">
       {{ session.prenom[0] }}{{ session.nom[0] }}
     </div>
@@ -85,12 +146,12 @@
   </div>
   <div class="mascot-wrapper" onclick="toggleMascotBubble()">
     <svg class="mascot-svg" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
-      <!-- Corps goutte d'huile -->
       <defs>
         <radialGradient id="dropGrad" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#FFD700"/>
-          <stop offset="60%" stop-color="#F4A500"/>
-          <stop offset="100%" stop-color="#D4810A"/>
+          <stop offset="0%" stop-color="#FFE066"/>
+          <stop offset="45%" stop-color="#FFC300"/>
+          <stop offset="80%" stop-color="#F4A500"/>
+          <stop offset="100%" stop-color="#C87D0A"/>
         </radialGradient>
         <radialGradient id="eyeGrad" cx="35%" cy="35%" r="65%">
           <stop offset="0%" stop-color="#fff"/>
@@ -98,33 +159,96 @@
         </radialGradient>
       </defs>
       <!-- Ombre -->
-      <ellipse cx="60" cy="148" rx="30" ry="5" fill="rgba(0,0,0,0.15)"/>
-      <!-- Goutte principale -->
-      <path d="M60 10 C60 10, 20 55, 20 90 C20 120, 38 142, 60 142 C82 142, 100 120, 100 90 C100 55, 60 10, 60 10 Z" fill="url(#dropGrad)"/>
-      <!-- Reflet -->
-      <path d="M50 28 C45 42, 35 60, 35 75 C35 82, 37 88, 40 92" stroke="rgba(255,255,200,0.6)" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="60" cy="148" rx="28" ry="4.5" fill="rgba(0,0,0,0.15)"/>
+
+      <!-- Goutte principale : haut fin en pointe, s'élargit progressivement -->
+      <path d="M60 6
+               C 63 6, 70 24, 80 48
+               C 94 72, 102 90, 102 106
+               C 102 130, 83 145, 60 145
+               C 37 145, 18 130, 18 106
+               C 18 90, 26 72, 40 48
+               C 50 24, 57 6, 60 6 Z" fill="url(#dropGrad)"/>
+
+      <!-- Reflet lumineux -->
+      <path d="M48 30 C 40 46, 30 66, 30 86 C 30 94, 32 100, 35 105"
+            stroke="rgba(255,255,220,0.65)" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle cx="42" cy="40" r="4" fill="rgba(255,255,230,0.75)"/>
+
       <!-- Yeux -->
-      <circle cx="45" cy="85" r="12" fill="url(#eyeGrad)" stroke="#333" stroke-width="1.5"/>
-      <circle cx="75" cy="85" r="12" fill="url(#eyeGrad)" stroke="#333" stroke-width="1.5"/>
-      <circle cx="47" cy="83" r="6" fill="#1a1a2e"/>
-      <circle cx="77" cy="83" r="6" fill="#1a1a2e"/>
-      <circle cx="50" cy="80" r="2.5" fill="white"/>
-      <circle cx="80" cy="80" r="2.5" fill="white"/>
+      <circle cx="46" cy="92" r="11.5" fill="url(#eyeGrad)" stroke="#333" stroke-width="1.5"/>
+      <circle cx="74" cy="92" r="11.5" fill="url(#eyeGrad)" stroke="#333" stroke-width="1.5"/>
+      <circle cx="48" cy="90" r="5.5" fill="#1a1a2e"/>
+      <circle cx="76" cy="90" r="5.5" fill="#1a1a2e"/>
+      <circle cx="50.5" cy="87" r="2.2" fill="white"/>
+      <circle cx="78.5" cy="87" r="2.2" fill="white"/>
+
       <!-- Sourire -->
-      <path d="M46 102 Q60 116 74 102" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M47 108 Q60 121 73 108" stroke="#1a1a2e" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
       <!-- Joues roses -->
-      <circle cx="35" cy="98" r="7" fill="rgba(255,100,100,0.35)"/>
-      <circle cx="85" cy="98" r="7" fill="rgba(255,100,100,0.35)"/>
+      <circle cx="36" cy="105" r="6.5" fill="rgba(255,100,100,0.35)"/>
+      <circle cx="84" cy="105" r="6.5" fill="rgba(255,100,100,0.35)"/>
+
       <!-- Mains -->
-      <ellipse cx="17" cy="100" rx="10" ry="7" fill="url(#dropGrad)" transform="rotate(-20,17,100)"/>
-      <ellipse cx="103" cy="100" rx="10" ry="7" fill="url(#dropGrad)" transform="rotate(20,103,100)"/>
+      <ellipse cx="16" cy="104" rx="9" ry="6.5" fill="url(#dropGrad)" transform="rotate(-20,16,104)"/>
+      <ellipse cx="104" cy="104" rx="9" ry="6.5" fill="url(#dropGrad)" transform="rotate(20,104,104)"/>
     </svg>
     <div class="mascot-pulse"></div>
   </div>
 </div>
 {% endif %}
 
+<!-- MODALE DE CONFIRMATION CUSTOM -->
+<div class="custom-modal-overlay" id="customModalOverlay">
+  <div class="custom-modal">
+    <div class="custom-modal-icon"><i class="fas fa-exclamation-triangle"></i></div>
+    <p class="custom-modal-message" id="customModalMessage"></p>
+    <div class="custom-modal-actions">
+      <button type="button" class="btn-modal-cancel" id="customModalCancel">Annuler</button>
+      <button type="button" class="btn-modal-confirm" id="customModalConfirm">Confirmer</button>
+    </div>
+  </div>
+</div>
+
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 {% block scripts %}{% endblock %}
+
+<script>
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+  }
+
+  // ===== SYSTÈME DE CONFIRMATION CUSTOM =====
+  let _modalResolve = null;
+
+  function confirmAction(message) {
+    return new Promise((resolve) => {
+      document.getElementById('customModalMessage').textContent = message;
+      document.getElementById('customModalOverlay').classList.add('active');
+      _modalResolve = resolve;
+    });
+  }
+
+  document.getElementById('customModalCancel').addEventListener('click', () => {
+    document.getElementById('customModalOverlay').classList.remove('active');
+    if (_modalResolve) _modalResolve(false);
+  });
+
+  document.getElementById('customModalConfirm').addEventListener('click', () => {
+    document.getElementById('customModalOverlay').classList.remove('active');
+    if (_modalResolve) _modalResolve(true);
+  });
+
+  // Intercepte tous les formulaires marqués .confirm-form
+  document.querySelectorAll('.confirm-form').forEach(form => {
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const message = this.dataset.message || 'Confirmer cette action ?';
+      const ok = await confirmAction(message);
+      if (ok) this.submit();
+    });
+  });
+</script>
 </body>
 </html>

@@ -44,29 +44,48 @@
     <svg class="hero-mascot-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="hDropGrad" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stop-color="#FFD700"/>
-          <stop offset="60%" stop-color="#F4A500"/>
-          <stop offset="100%" stop-color="#D4810A"/>
+          <stop offset="0%" stop-color="#FFE066"/>
+          <stop offset="45%" stop-color="#FFC300"/>
+          <stop offset="80%" stop-color="#F4A500"/>
+          <stop offset="100%" stop-color="#C87D0A"/>
         </radialGradient>
       </defs>
-      <ellipse cx="80" cy="196" rx="42" ry="7" fill="rgba(0,0,0,0.12)"/>
-      <path d="M80 12 C80 12, 28 70, 28 115 C28 158, 52 192, 80 192 C108 192, 132 158, 132 115 C132 70, 80 12, 80 12 Z" fill="url(#hDropGrad)"/>
-      <path d="M65 35 C58 52, 46 78, 46 98 C46 108, 49 116, 53 122" stroke="rgba(255,255,200,0.55)" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+      <!-- Ombre -->
+      <ellipse cx="80" cy="197" rx="37" ry="6" fill="rgba(0,0,0,0.12)"/>
+
+      <!-- Goutte : haut fin en pointe, s'élargit progressivement -->
+      <path d="M80 8
+               C 84 8, 93 32, 107 64
+               C 125 96, 136 120, 136 141
+               C 136 173, 111 193, 80 193
+               C 49 193, 24 173, 24 141
+               C 24 120, 35 96, 53 64
+               C 67 32, 76 8, 80 8 Z" fill="url(#hDropGrad)"/>
+
+      <!-- Reflet -->
+      <path d="M64 40 C 53 61, 40 88, 40 115 C 40 125, 43 133, 47 140"
+            stroke="rgba(255,255,220,0.65)" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <circle cx="56" cy="53" r="5" fill="rgba(255,255,230,0.75)"/>
+
       <!-- Yeux -->
-      <circle cx="60" cy="115" r="16" fill="white" stroke="#333" stroke-width="2"/>
-      <circle cx="100" cy="115" r="16" fill="white" stroke="#333" stroke-width="2"/>
-      <circle cx="63" cy="112" r="8" fill="#1a1a2e"/>
-      <circle cx="103" cy="112" r="8" fill="#1a1a2e"/>
-      <circle cx="67" cy="108" r="3.5" fill="white"/>
-      <circle cx="107" cy="108" r="3.5" fill="white"/>
+      <circle cx="61" cy="123" r="15.3" fill="white" stroke="#333" stroke-width="2"/>
+      <circle cx="99" cy="123" r="15.3" fill="white" stroke="#333" stroke-width="2"/>
+      <circle cx="64" cy="120" r="7.3" fill="#1a1a2e"/>
+      <circle cx="101" cy="120" r="7.3" fill="#1a1a2e"/>
+      <circle cx="67" cy="116" r="2.9" fill="white"/>
+      <circle cx="105" cy="116" r="2.9" fill="white"/>
+
       <!-- Sourire -->
-      <path d="M60 138 Q80 156 100 138" stroke="#1a1a2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M63 144 Q80 161 97 144" stroke="#1a1a2e" stroke-width="3" fill="none" stroke-linecap="round"/>
+
       <!-- Joues -->
-      <circle cx="44" cy="130" r="10" fill="rgba(255,100,100,0.3)"/>
-      <circle cx="116" cy="130" r="10" fill="rgba(255,100,100,0.3)"/>
+      <circle cx="48" cy="140" r="8.7" fill="rgba(255,100,100,0.3)"/>
+      <circle cx="112" cy="140" r="8.7" fill="rgba(255,100,100,0.3)"/>
+
       <!-- Mains -->
-      <ellipse cx="18" cy="130" rx="14" ry="9" fill="url(#hDropGrad)" transform="rotate(-15,18,130)"/>
-      <ellipse cx="142" cy="130" rx="14" ry="9" fill="url(#hDropGrad)" transform="rotate(15,142,130)"/>
+      <ellipse cx="21" cy="139" rx="12" ry="8.7" fill="url(#hDropGrad)" transform="rotate(-20,21,139)"/>
+      <ellipse cx="139" cy="139" rx="12" ry="8.7" fill="url(#hDropGrad)" transform="rotate(20,139,139)"/>
     </svg>
   </div>
 </section>

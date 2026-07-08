@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 from pypdf import PdfReader
 
 from config import Config
-from models import db, User, Manuel, Chunk, Conversation, Interaction
+from models import db, User, Manuel, Chunk, Conversation, Interaction, Journal
 from rag import indexer_document
 from ai import generer_reponse
 
@@ -56,6 +56,20 @@ def get_stats():
     }
 
 
+def log_action(type_action, description, id_utilisateur=None):
+    """
+    Enregistre une entrée dans le journal (connexions, téléchargements, actions admin).
+    Cf. Cahier des charges, section 3.7 (Sécurité > Journalisation).
+    """
+    entree = Journal(
+        id_utilisateur=id_utilisateur or session.get('user_id'),
+        type_action=type_action,
+        description=description
+    )
+    db.session.add(entree)
+    db.session.commit()
+
+
 # ─── Routes publiques ─────────────────────────────────────────────────────────
 @app.route('/')
 def index():
@@ -76,6 +90,7 @@ def login():
             session['role'] = user.role
             session['nom'] = user.nom
             session['prenom'] = user.prenom
+            log_action('connexion', f'Connexion de {user.prenom} {user.nom}', id_utilisateur=user.id_utilisateur)
             return redirect(url_for('accueil'))
         flash('Email ou mot de passe incorrect.', 'error')
     return render_template('login.html')
@@ -105,7 +120,7 @@ def manuels():
     if search:
         query = query.filter(Manuel.titre.ilike(f'%{search}%'))
     filtered = query.all()
-    categories = sorted(set(m.categorie for m in Manuel.query.all() if m.categorie))
+    categories = ['Manuel', 'SET-LOXO']
     return render_template('manuels.html', manuels=filtered, categories=categories, categorie_active=categorie)
 
 
@@ -133,12 +148,12 @@ def api_chat():
     data = request.get_json()
     question = (data.get('question') or '').strip()
     id_conversation = data.get('id_conversation')
+    langue = data.get('langue', 'fr')
 
     if not question:
         return jsonify({'error': 'Question vide'}), 400
 
-    resultat = generer_reponse(question)
-
+    resultat = generer_reponse(question, langue=langue)
     # Sauvegarde de la conversation
     if id_conversation:
         conversation = Conversation.query.get(id_conversation)
@@ -161,6 +176,17 @@ def api_chat():
     resultat['id_conversation'] = conversation.id_conversation
     return jsonify(resultat)
 
+@app.route('/api/conversation/<int:id>')
+@login_required
+def get_conversation(id):
+    conv = Conversation.query.get_or_404(id)
+    if conv.id_utilisateur != session['user_id']:
+        return jsonify({'error': 'Non autorisé'}), 403
+    interactions = Interaction.query.filter_by(id_conversation=id).all()
+    return jsonify({
+        'titre': conv.titre,
+        'messages': [{'question': i.question, 'reponse': i.reponse} for i in interactions]
+    })
 
 @app.route('/historique')
 @login_required
@@ -185,12 +211,11 @@ def supprimer_conversation(id):
     conv = Conversation.query.get_or_404(id)
     if conv.id_utilisateur != session['user_id']:
         flash('Action non autorisée.', 'error')
-        return redirect(url_for('historique'))
+        return redirect(url_for('assistant'))
     Interaction.query.filter_by(id_conversation=conv.id_conversation).delete()
     db.session.delete(conv)
     db.session.commit()
-    flash('Conversation supprimée.', 'success')
-    return redirect(url_for('historique'))
+    return redirect(url_for('assistant'))
 
 @app.route('/faq')
 @login_required
@@ -218,7 +243,13 @@ def ajouter_manuel():
 
         if not fichier or not allowed_file(fichier.filename):
             flash('Fichier invalide, seuls les PDF sont acceptés.', 'error')
-            categories = sorted(set(m.categorie for m in Manuel.query.all() if m.categorie))
+            categories = ['Manuel', 'SET-LOXO']
+            return render_template('ajouter_manuel.html', categories=categories)
+
+        # Vérifie qu'un manuel avec ce titre n'existe pas déjà
+        if Manuel.query.filter_by(titre=titre).first():
+            flash(f'Un manuel intitulé "{titre}" existe déjà. Choisissez un autre titre.', 'error')
+            categories = ['Manuel', 'SET-LOXO']
             return render_template('ajouter_manuel.html', categories=categories)
 
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -249,11 +280,14 @@ def ajouter_manuel():
         # Indexation automatique pour le RAG
         nb_chunks = indexer_document(chemin, manuel.id_manuel)
 
+        log_action('admin', f'Ajout du manuel "{titre}"')
+
         flash(f'Manuel "{titre}" ajouté et indexé avec succès ({nb_chunks} extraits).', 'success')
         return redirect(url_for('administration'))
 
-    categories = sorted(set(m.categorie for m in Manuel.query.all() if m.categorie))
+    categories = ['Manuel', 'SET-LOXO']
     return render_template('ajouter_manuel.html', categories=categories)
+
 
 @app.route('/administration/ajouter-utilisateur', methods=['GET', 'POST'])
 @admin_required
@@ -271,6 +305,7 @@ def ajouter_utilisateur():
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
+            log_action('admin', f'Création de l\'utilisateur {prenom} {nom} ({role})')
             flash(f'Utilisateur {prenom} {nom} créé avec succès.', 'success')
             return redirect(url_for('administration'))
     return render_template('ajouter_utilisateur.html')
@@ -280,11 +315,13 @@ def ajouter_utilisateur():
 @admin_required
 def supprimer_manuel(id):
     manuel = Manuel.query.get_or_404(id)
+    titre = manuel.titre
     chemin = manuel.chemin_fichier
     db.session.delete(manuel)  # cascade supprime aussi les chunks
     db.session.commit()
     if chemin and os.path.exists(chemin):
         os.remove(chemin)
+    log_action('admin', f'Suppression du manuel "{titre}"')
     flash('Manuel supprimé.', 'success')
     return redirect(url_for('administration'))
 
@@ -296,8 +333,10 @@ def supprimer_utilisateur(id):
         flash('Vous ne pouvez pas supprimer votre propre compte.', 'error')
         return redirect(url_for('administration'))
     user = User.query.get_or_404(id)
+    nom_complet = f'{user.prenom} {user.nom}'
     db.session.delete(user)
     db.session.commit()
+    log_action('admin', f'Suppression de l\'utilisateur {nom_complet}')
     flash('Utilisateur supprimé.', 'success')
     return redirect(url_for('administration'))
 
@@ -305,8 +344,19 @@ def supprimer_utilisateur(id):
 @app.route('/uploads/<path:filename>')
 @login_required
 def uploaded_file(filename):
+    manuel = Manuel.query.filter(Manuel.chemin_fichier.like(f'%{filename}')).first()
+    log_action('telechargement', f'Téléchargement de "{manuel.titre}"' if manuel else f'Téléchargement de {filename}')
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+
+@app.route('/administration/effacer-historique', methods=['POST'])
+@admin_required
+def effacer_historique_admin():
+    Interaction.query.delete()
+    Conversation.query.delete()
+    db.session.commit()
+    flash("Tout l'historique a été effacé.", 'success')
+    return redirect(url_for('administration'))
 
 if __name__ == '__main__':
     os.makedirs('uploads', exist_ok=True)

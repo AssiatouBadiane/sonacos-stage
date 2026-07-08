@@ -32,7 +32,7 @@
         <i class="fas fa-external-link-alt"></i> Ouvrir
       </a>
       <form method="POST" action="{{ url_for('supprimer_conversation', id=conv.id_conversation) }}"
-            style="display:inline" onsubmit="return confirm('Supprimer cette conversation ?')">
+            style="display:inline" class="confirm-form" data-message="Supprimer cette conversation ?">
         <button type="submit" class="btn-delete-conv" title="Supprimer">
           <i class="fas fa-trash"></i>
         </button>
@@ -43,8 +43,8 @@
 </div>
 
   <div class="hist-actions">
-  <form method="POST" action="{{ url_for('effacer_historique') }}" 
-        onsubmit="return confirm('Effacer tout l\'historique ? Cette action est irréversible.')">
+  <form method="POST" action="{{ url_for('effacer_historique') }}"
+        class="confirm-form" data-message="Effacer tout l'historique ? Cette action est irréversible.">
     <button type="submit" class="btn-clear-all">
       <i class="fas fa-trash"></i> Effacer tout
     </button>

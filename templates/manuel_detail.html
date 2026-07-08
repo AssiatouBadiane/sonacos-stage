@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ manuel.titre }} — SONACOS{% endblock %}
+
 {% block content %}
 <div class="page-detail">
   <a href="{{ url_for('manuels') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> Retour aux manuels</a>
@@ -11,23 +12,31 @@
         <h1>{{ manuel.titre }}</h1>
         <p>{{ manuel.description }}</p>
         <div class="detail-meta">
-          <span><i class="fas fa-file-pdf"></i> {{ manuel.pages }} pages</span>
+          <span><i class="fas fa-file-pdf"></i> {{ manuel.nb_pages }} pages</span>
           <span><i class="fas fa-hdd"></i> {{ manuel.taille }}</span>
           <span><i class="fas fa-calendar"></i> Mis à jour le {{ manuel.date_ajout }}</span>
         </div>
       </div>
     </div>
     <div class="detail-actions">
-      <a href="#" class="btn-download-lg"><i class="fas fa-download"></i> Télécharger le PDF</a>
-      <a href="{{ url_for('assistant') }}" class="btn-ask-ia"><i class="fas fa-robot"></i> Interroger l'IA sur ce manuel</a>
+      <a href="{{ url_for('uploaded_file', filename=manuel.fichier) }}" 
+         class="btn-download-lg" target="_blank">
+        <i class="fas fa-download"></i> Télécharger le PDF
+      </a>
+      <a href="{{ url_for('assistant') }}" class="btn-ask-ia">
+        <i class="fas fa-robot"></i> Interroger l'IA sur ce manuel
+      </a>
     </div>
   </div>
 
-  <!-- PDF viewer placeholder -->
-  <div class="pdf-viewer-placeholder">
-    <i class="fas fa-file-pdf"></i>
-    <p>Le visualiseur PDF s'affichera ici une fois le fichier uploadé.</p>
-    <small>Fichier : {{ manuel.fichier }}</small>
+  <!-- PDF VIEWER -->
+  <div class="pdf-viewer-container" style="margin-top:1.5rem; border-radius:12px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,0.08);">
+    <iframe 
+      src="{{ url_for('uploaded_file', filename=manuel.fichier) }}"
+      width="100%" 
+      height="850px"
+      style="border:none;">
+    </iframe>
   </div>
 </div>
 {% endblock %}

@@ -19,11 +19,8 @@
     <div class="login-center">
       <div class="login-card">
         <div class="login-logo-box">
-          <div class="login-logo-box">
-            <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" width="50" height="50">
-          </div>
+          <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Logo SONACOS" width="140" height="140" style="object-fit:contain;">
         </div>
-        <h1 class="login-title">SONACOS</h1>
         <p class="login-subtitle">Accès à votre espace de travail</p>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -49,11 +46,6 @@
           <button type="submit" class="btn-login">Se connecter</button>
         </form>
         <a href="#" class="forgot-link">Mot de passe oublié ?</a>
-
-        <div class="login-hint">
-          <small><strong>Demo :</strong> admin@sonacos.sn / admin123</small><br>
-          <small>ou employe@sonacos.sn / emp123</small>
-        </div>
       </div>
     </div>
 

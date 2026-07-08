@@ -13,7 +13,7 @@ _model = None
 def get_model():
     global _model
     if _model is None:
-        _model = SentenceTransformer('all-MiniLM-L6-v2')
+        _model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
     return _model
 
 
@@ -56,20 +56,27 @@ def indexer_document(chemin_fichier, id_manuel):
         return 0
 
     chunks = decouper_en_chunks(pages)
+    if not chunks:
+        print(f"❌ Aucun chunk généré pour le manuel ID {id_manuel}.")
+        return 0
+
     model = get_model()
 
-    for chunk in chunks:
-        embedding = model.encode(chunk['texte'])
-        embedding_str = ','.join(map(str, embedding))
+    # Encodage en une seule fois (batch) au lieu d'un chunk à la fois : beaucoup plus rapide
+    textes = [chunk['texte'] for chunk in chunks]
+    embeddings = model.encode(textes, batch_size=32, show_progress_bar=False)
 
-        nouveau_chunk = Chunk(
+    nouveaux_chunks = []
+    for chunk, embedding in zip(chunks, embeddings):
+        embedding_str = ','.join(map(str, embedding))
+        nouveaux_chunks.append(Chunk(
             extrait_texte=chunk['texte'],
             num_page=chunk['num_page'],
             id_manuel=id_manuel,
             embedding=embedding_str
-        )
-        db.session.add(nouveau_chunk)
+        ))
 
+    db.session.bulk_save_objects(nouveaux_chunks)
     db.session.commit()
     print(f"💾 {len(chunks)} chunks enregistrés pour le manuel ID {id_manuel}.")
     return len(chunks)
@@ -88,13 +95,12 @@ def rechercher_chunks(question, id_manuel=None, top_k=3, seuil=0.3):
     if not chunks:
         return []
 
-    similarites = []
-    for chunk in chunks:
-        chunk_embedding = np.array(list(map(float, chunk.embedding.split(','))))
-        similarite = cosine_similarity([question_embedding], [chunk_embedding])[0][0]
-        similarites.append((chunk, similarite))
+    chunk_embeddings = np.array([
+        list(map(float, chunk.embedding.split(','))) for chunk in chunks
+    ])
+    similarites = cosine_similarity([question_embedding], chunk_embeddings)[0]
 
-    similarites.sort(key=lambda x: x[1], reverse=True)
-    resultats = [(chunk, score) for chunk, score in similarites[:top_k] if score >= seuil]
+    resultats = sorted(zip(chunks, similarites), key=lambda x: x[1], reverse=True)
+    resultats = [(chunk, score) for chunk, score in resultats[:top_k] if score >= seuil]
 
     return [chunk for chunk, score in resultats]

@@ -68,7 +68,8 @@
           <td><span class="role-badge {{ u.role }}">{{ u.role|capitalize }}</span></td>
           <td>
             {% if u.id_utilisateur != session.get('user_id') %}
-            <form method="POST" action="{{ url_for('supprimer_utilisateur', id=u.id_utilisateur) }}" style="display:inline" onsubmit="return confirm('Supprimer cet utilisateur ?')">
+            <form method="POST" action="{{ url_for('supprimer_utilisateur', id=u.id_utilisateur) }}"
+                  style="display:inline" class="confirm-form" data-message="Supprimer cet utilisateur ?">
               <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
             </form>
             {% else %}
@@ -82,46 +83,85 @@
   </div>
 
   <!-- TAB: MANUELS -->
-  <div class="tab-panel" id="tab-manuels">
-    <div class="panel-header">
-      <div>
-        <strong>Gestion des manuels</strong>
-        <p>Base documentaire technique et opérationnelle</p>
-      </div>
-      <a href="{{ url_for('ajouter_manuel') }}" class="btn-add"><i class="fas fa-plus"></i> Ajouter un manuel</a>
+<div class="tab-panel" id="tab-manuels">
+  <div class="panel-header">
+    <div>
+      <strong>Gestion des manuels</strong>
+      <p>Base documentaire technique et opérationnelle</p>
     </div>
-    <table class="admin-table">
-      <thead>
-        <tr><th>TITRE</th><th>CATÉGORIE</th><th>PAGES</th><th>DATE</th><th>ACTIONS</th></tr>
-      </thead>
-      <tbody>
-        {% for m in manuels %}
-        <tr>
-          <td><strong>{{ m.titre }}</strong></td>
-          <td><span class="cat-badge {{ m.categorie|lower }}">{{ m.categorie }}</span></td>
-          <td>{{ m.pages }}</td>
-          <td>{{ m.date_ajout }}</td>
-          <td>
-            <a href="{{ url_for('manuel_detail', id=m.id) }}" class="btn-icon-sm" title="Voir"><i class="fas fa-eye"></i></a>
-            <form method="POST" action="{{ url_for('supprimer_manuel', id=m.id) }}" style="display:inline" onsubmit="return confirm('Supprimer ce manuel ?')">
-              <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <a href="{{ url_for('ajouter_manuel') }}" class="btn-add"><i class="fas fa-plus"></i> Ajouter un manuel</a>
   </div>
+  <table class="admin-table">
+    <thead>
+      <tr><th>TITRE</th><th>CATÉGORIE</th><th>PAGES</th><th>DATE</th><th>ACTIONS</th></tr>
+    </thead>
+    <tbody>
+      {% for m in manuels %}
+      <tr>
+        <td><strong>{{ m.titre }}</strong></td>
+        <td><span class="cat-badge {{ m.categorie|lower }}">{{ m.categorie }}</span></td>
+        <td>{{ m.nb_pages }}</td>
+        <td>{{ m.date_ajout }}</td>
+        <td>
+          <a href="{{ url_for('manuel_detail', id=m.id_manuel) }}" class="btn-icon-sm" title="Voir"><i class="fas fa-eye"></i></a>
+          <form method="POST" action="{{ url_for('supprimer_manuel', id=m.id_manuel) }}"
+                style="display:inline" class="confirm-form" data-message="Supprimer ce manuel ?">
+            <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
   <!-- TAB: STATS -->
   <div class="tab-panel" id="tab-stats">
-    <p style="padding:2rem; color:#666;">Graphiques et statistiques — intégrer Chart.js ici.</p>
+    <p style="padding:2rem; color:#666;">Graphiques et statistiques — (nombre de connexion ou autre )</p>
   </div>
 
-  <!-- TAB: PARAMS -->
-  <div class="tab-panel" id="tab-params">
-    <p style="padding:2rem; color:#666;">Paramètres système — intégration Groq API key, configuration RAG, etc.</p>
+<!-- TAB: PARAMS -->
+<div class="tab-panel" id="tab-params">
+  <div class="panel-header">
+    <div>
+      <strong>Paramètres de l'interface</strong>
+      <p>Personnalisez votre expérience sur la plateforme</p>
+    </div>
   </div>
+  <div class="params-section">
+
+    <!-- THEME -->
+    <div class="param-card">
+      <div class="param-info">
+        <i class="fas fa-moon" style="color:#6c63ff; font-size:1.5rem;"></i>
+        <div>
+          <strong>Thème de l'interface</strong>
+          <p>Basculer entre le mode clair et le mode sombre</p>
+        </div>
+      </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="themeToggle" onchange="toggleTheme(this)">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+
+    <!-- LANGUE -->
+    <div class="param-card">
+      <div class="param-info">
+        <i class="fas fa-globe" style="color:#2d7a27; font-size:1.5rem;"></i>
+        <div>
+          <strong>Langue de l'interface</strong>
+          <p>Choisissez la langue d'affichage</p>
+        </div>
+      </div>
+      <select id="langSelect" onchange="changeLangue(this.value)" class="select-langue">
+        <option value="fr">🇫🇷 Français</option>
+        <option value="en">🇬🇧 English</option>
+      </select>
+    </div>
+
+  </div>
+</div>
 
   <!-- PLATFORM STATUS -->
   <div class="platform-status">
@@ -132,7 +172,6 @@
         <p>Tous les services sont opérationnels. Dernière synchronisation il y a 5 minutes.</p>
       </div>
     </div>
-    <button class="btn-restart"><i class="fas fa-sync-alt"></i> Redémarrer les services</button>
   </div>
 </div>
 {% endblock %}
@@ -145,5 +184,45 @@ function showTab(name, btn) {
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
 }
+
+// Thème
+function toggleTheme(el) {
+  if (el.checked) {
+    document.body.classList.add('dark-mode');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.remove('dark-mode');
+    localStorage.setItem('theme', 'light');
+  }
+}
+
+// Langue
+function changeLangue(val) {
+  localStorage.setItem('langue', val);
+  showLangueToast(val === 'en' ? 'Language set to English. Full translation coming soon.' : 'Langue définie sur Français.');
+}
+
+function showLangueToast(msg) {
+  const toast = document.createElement('div');
+  toast.className = 'flash flash-info';
+  toast.style.position = 'fixed';
+  toast.style.bottom = '20px';
+  toast.style.right = '20px';
+  toast.style.zIndex = '9998';
+  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Appliquer au chargement
+window.addEventListener('DOMContentLoaded', () => {
+  const theme = localStorage.getItem('theme');
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('themeToggle').checked = true;
+  }
+  const langue = localStorage.getItem('langue');
+  if (langue) document.getElementById('langSelect').value = langue;
+});
 </script>
 {% endblock %}
