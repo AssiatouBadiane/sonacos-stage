@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Accueil — SONACOS{% endblock %}
+{% block title %}{{ _('Accueil') }} — SONACOS{% endblock %}
 
 {% block content %}
 <div class="page-accueil">
@@ -7,11 +7,11 @@
   <!-- HERO BANNER -->
   <section class="dashboard-hero">
     <div class="hero-text">
-      <div class="hero-badge">SONACOS · Digitalisation des documents & IA</div>
-      <h1>Bienvenue sur la plateforme<br><span class="green-text">SONACOS Procédures</span></h1>
-      <p>Centralisez, interrogez et optimisez vos processus opérationnels grâce à notre assistant intelligent alimenté par l'intelligence artificielle de pointe.</p>
+      <div class="hero-badge">{{ _('SONACOS · Digitalisation des documents & IA') }}</div>
+      <h1>{{ _('Bienvenue sur la plateforme') }}<br><span class="green-text">{{ _('SONACOS Procédures') }}</span></h1>
+      <p>{{ _("Centralisez, interrogez et optimisez vos processus opérationnels grâce à notre assistant intelligent alimenté par l'intelligence artificielle de pointe.") }}</p>
       <a href="{{ url_for('assistant') }}" class="btn-primary-lg">
-        <i class="fas fa-comment-dots"></i> Poser une question à l'IA
+        <i class="fas fa-comment-dots"></i> {{ _("Poser une question à l'IA") }}
       </a>
     </div>
   </section>
@@ -20,35 +20,35 @@
   <section class="stats-grid">
     <div class="stat-card">
       <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-      <div class="stat-badge green">Actif</div>
+      <div class="stat-badge green">{{ _('Actif') }}</div>
       <div class="stat-number">{{ stats.manuels_publies }}</div>
-      <div class="stat-label"><i class="fas fa-circle green-dot"></i> Manuels disponibles</div>
+      <div class="stat-label"><i class="fas fa-circle green-dot"></i> {{ _('Manuels disponibles') }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon"><i class="fas fa-book-open"></i></div>
-      <div class="stat-badge blue">Indexé</div>
+      <div class="stat-badge blue">{{ _('Indexé') }}</div>
       <div class="stat-number">{{ stats.chunks_indexes }}</div>
-<div class="stat-label"><i class="fas fa-circle blue-dot"></i> Extraits indexés</div>
+<div class="stat-label"><i class="fas fa-circle blue-dot"></i> {{ _('Extraits indexés') }}</div>
 </div>
     <div class="stat-card">
       <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
       <div class="stat-badge green">+2%</div>
       <div class="stat-number">98%</div>
-      <div class="stat-label"><i class="fas fa-check green-dot"></i> Précision des réponses</div>
+      <div class="stat-label"><i class="fas fa-check green-dot"></i> {{ _('Précision des réponses') }}</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon"><i class="fas fa-users"></i></div>
       <div class="stat-badge orange">Live</div>
       <div class="stat-number">{{ stats.utilisateurs_actifs }}</div>
-      <div class="stat-label"><i class="fas fa-circle orange-dot"></i> Utilisateurs actifs</div>
+      <div class="stat-label"><i class="fas fa-circle orange-dot"></i> {{ _('Utilisateurs actifs') }}</div>
     </div>
   </section>
 
   <!-- FAQ PREVIEW -->
   <section class="faq-preview">
     <div class="section-header">
-      <h2>Questions fréquentes</h2>
-      <a href="{{ url_for('faq') }}" class="btn-outline">Voir tout <i class="fas fa-arrow-right"></i></a>
+      <h2>{{ _('Questions fréquentes') }}</h2>
+      <a href="{{ url_for('faq') }}" class="btn-outline">{{ _('Voir tout') }} <i class="fas fa-arrow-right"></i></a>
     </div>
     <div class="faq-grid">
       {% for f in faq %}

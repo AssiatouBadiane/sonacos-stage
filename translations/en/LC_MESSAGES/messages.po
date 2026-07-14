@@ -1,0 +1,713 @@
+# English translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-07-14 07:48+0000\n"
+"PO-Revision-Date: 2026-07-13 09:00+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "Comment demander un congé annuel ?"
+msgstr "How do I request annual leave?"
+
+msgid ""
+"Remplissez le formulaire sur l'intranet RH, obtenez la validation de "
+"votre supérieur, puis transmettez au service RH 15 jours à l'avance."
+msgstr ""
+"Fill out the form on the HR intranet, get your supervisor's approval, "
+"then submit it to the HR department 15 days in advance."
+
+msgid "Manuel RH"
+msgstr "HR Manual"
+
+msgid "Quels sont les EPI obligatoires en atelier ?"
+msgstr "What PPE is mandatory in the workshop?"
+
+msgid ""
+"Casque, lunettes de protection, gants, chaussures de sécurité et gilet "
+"réfléchissant sont obligatoires dans toutes les zones de production."
+msgstr ""
+"Helmet, safety glasses, gloves, safety shoes, and a reflective vest are "
+"mandatory in all production areas."
+
+msgid "Guide Sécurité"
+msgstr "Safety Guide"
+
+msgid "Comment signaler un incident de sécurité ?"
+msgstr "How do I report a safety incident?"
+
+msgid ""
+"Tout incident doit être signalé immédiatement au responsable HSE via le "
+"formulaire F-HSE-001 et enregistré dans le registre des incidents."
+msgstr ""
+"Any incident must be reported immediately to the HSE manager using form "
+"F-HSE-001 and logged in the incident register."
+
+#: app.py:56
+msgid "Accès réservé aux administrateurs."
+msgstr "Access restricted to administrators."
+
+#: app.py:111
+msgid "Email ou mot de passe incorrect."
+msgstr "Incorrect email or password."
+
+#: app.py:153
+msgid "Manuel introuvable."
+msgstr "Manual not found."
+
+#: app.py:233
+msgid "Tout l'historique a été effacé."
+msgstr "All history has been cleared."
+
+#: app.py:241
+msgid "Action non autorisée."
+msgstr "Unauthorized action."
+
+#: app.py:273
+msgid "Fichier invalide, seuls les PDF sont acceptés."
+msgstr "Invalid file, only PDFs are accepted."
+
+#: app.py:279
+#, python-format
+msgid "Un manuel intitulé \"%(titre)s\" existe déjà. Choisissez un autre titre."
+msgstr "A manual titled \"%(titre)s\" already exists. Please choose another title."
+
+#: app.py:313
+#, python-format
+msgid ""
+"Manuel \"%(titre)s\" ajouté et indexé avec succès (%(nb_chunks)s "
+"extraits)."
+msgstr ""
+"Manual \"%(titre)s\" added and indexed successfully (%(nb_chunks)s "
+"excerpts)."
+
+#: app.py:331
+msgid "Cet email est déjà utilisé."
+msgstr "This email is already in use."
+
+#: app.py:338
+#, python-format
+msgid "Utilisateur %(prenom)s %(nom)s créé avec succès."
+msgstr "User %(prenom)s %(nom)s created successfully."
+
+#: app.py:353
+msgid "Manuel supprimé."
+msgstr "Manual deleted."
+
+#: app.py:361
+msgid "Vous ne pouvez pas supprimer votre propre compte."
+msgstr "You cannot delete your own account."
+
+#: app.py:368
+msgid "Utilisateur supprimé."
+msgstr "User deleted."
+
+#: templates/accueil.html:2 templates/base.html:91 templates/landing.html:21
+#: templates/landing.html:138
+msgid "Accueil"
+msgstr "Home"
+
+#: templates/accueil.html:10
+msgid "SONACOS · Digitalisation des documents & IA"
+msgstr "SONACOS · Document Digitization & AI"
+
+#: templates/accueil.html:11
+msgid "Bienvenue sur la plateforme"
+msgstr "Welcome to the"
+
+#: templates/accueil.html:11
+msgid "SONACOS Procédures"
+msgstr "SONACOS Procedures platform"
+
+#: templates/accueil.html:12
+msgid ""
+"Centralisez, interrogez et optimisez vos processus opérationnels grâce à "
+"notre assistant intelligent alimenté par l'intelligence artificielle de "
+"pointe."
+msgstr ""
+"Centralize, query, and optimize your operational processes with our "
+"intelligent assistant powered by cutting-edge artificial intelligence."
+
+#: templates/accueil.html:14
+msgid "Poser une question à l'IA"
+msgstr "Ask the AI a question"
+
+#: templates/accueil.html:23
+msgid "Actif"
+msgstr "Active"
+
+#: templates/accueil.html:25 templates/landing.html:99
+msgid "Manuels disponibles"
+msgstr "Manuals available"
+
+#: templates/accueil.html:29
+msgid "Indexé"
+msgstr "Indexed"
+
+#: templates/accueil.html:31
+msgid "Extraits indexés"
+msgstr "Indexed excerpts"
+
+#: templates/accueil.html:37
+msgid "Précision des réponses"
+msgstr "Answer accuracy"
+
+#: templates/accueil.html:43 templates/administration.html:13
+msgid "Utilisateurs actifs"
+msgstr "Active users"
+
+#: templates/accueil.html:50 templates/faq.html:5 templates/landing.html:117
+msgid "Questions fréquentes"
+msgstr "Frequently Asked Questions"
+
+#: templates/accueil.html:51
+msgid "Voir tout"
+msgstr "See all"
+
+#: templates/administration.html:2 templates/administration.html:6
+#: templates/base.html:101
+msgid "Administration"
+msgstr "Administration"
+
+#: templates/administration.html:7
+msgid "Gestion centralisée de la plateforme"
+msgstr "Centralized platform management"
+
+#: templates/administration.html:20
+msgid "Manuels publiés"
+msgstr "Published manuals"
+
+#: templates/administration.html:27
+msgid "Questions au chatbot"
+msgstr "Chatbot questions"
+
+#: templates/administration.html:34
+msgid "Chunks indexés"
+msgstr "Indexed chunks"
+
+#: templates/administration.html:42
+msgid "Utilisateurs"
+msgstr "Users"
+
+#: templates/administration.html:43 templates/base.html:105
+#: templates/landing.html:140 templates/manuels.html:2
+msgid "Manuels"
+msgstr "Manuals"
+
+#: templates/administration.html:44
+msgid "Statistiques"
+msgstr "Statistics"
+
+#: templates/administration.html:45
+msgid "Paramètres"
+msgstr "Settings"
+
+#: templates/administration.html:52
+msgid "Gestion des utilisateurs"
+msgstr "User management"
+
+#: templates/administration.html:53
+msgid "Comptes, rôles et permissions"
+msgstr "Accounts, roles, and permissions"
+
+#: templates/administration.html:55 templates/ajouter_utilisateur.html:9
+msgid "Nouvel utilisateur"
+msgstr "New user"
+
+#: templates/administration.html:60
+msgid "NOM"
+msgstr "NAME"
+
+#: templates/administration.html:60
+msgid "EMAIL"
+msgstr "EMAIL"
+
+#: templates/administration.html:60
+msgid "RÔLE"
+msgstr "ROLE"
+
+#: templates/administration.html:60 templates/administration.html:96
+msgid "ACTIONS"
+msgstr "ACTIONS"
+
+#: templates/administration.html:72
+msgid "Supprimer cet utilisateur ?"
+msgstr "Delete this user?"
+
+#: templates/administration.html:73 templates/administration.html:109
+#: templates/assistant.html:25 templates/historique.html:36
+msgid "Supprimer"
+msgstr "Delete"
+
+#: templates/administration.html:76
+msgid "Vous"
+msgstr "You"
+
+#: templates/administration.html:89
+msgid "Gestion des manuels"
+msgstr "Manual management"
+
+#: templates/administration.html:90
+msgid "Base documentaire technique et opérationnelle"
+msgstr "Technical and operational document database"
+
+#: templates/administration.html:92 templates/ajouter_manuel.html:2
+#: templates/ajouter_manuel.html:7
+msgid "Ajouter un manuel"
+msgstr "Add a manual"
+
+#: templates/administration.html:96
+msgid "TITRE"
+msgstr "TITLE"
+
+#: templates/administration.html:96
+msgid "CATÉGORIE"
+msgstr "CATEGORY"
+
+#: templates/administration.html:96
+msgid "PAGES"
+msgstr "PAGES"
+
+#: templates/administration.html:96
+msgid "DATE"
+msgstr "DATE"
+
+#: templates/administration.html:106
+msgid "Voir"
+msgstr "View"
+
+#: templates/administration.html:108
+msgid "Supprimer ce manuel ?"
+msgstr "Delete this manual?"
+
+#: templates/administration.html:120
+msgid "Graphiques et statistiques — (nombre de connexion ou autre )"
+msgstr "Charts and statistics — (login count or other)"
+
+#: templates/administration.html:127
+msgid "Paramètres de l'interface"
+msgstr "Interface settings"
+
+#: templates/administration.html:128
+msgid "Personnalisez votre expérience sur la plateforme"
+msgstr "Customize your experience on the platform"
+
+#: templates/administration.html:138
+msgid "Thème de l'interface"
+msgstr "Interface theme"
+
+#: templates/administration.html:139
+msgid "Basculer entre le mode clair et le mode sombre"
+msgstr "Switch between light and dark mode"
+
+#: templates/administration.html:153
+msgid "Langue de l'interface"
+msgstr "Interface language"
+
+#: templates/administration.html:154
+msgid "Choisissez la langue d'affichage"
+msgstr "Choose the display language"
+
+#: templates/administration.html:171
+msgid "État de la plateforme"
+msgstr "Platform status"
+
+#: templates/administration.html:172
+msgid ""
+"Tous les services sont opérationnels. Dernière synchronisation il y a 5 "
+"minutes."
+msgstr "All services are operational. Last synced 5 minutes ago."
+
+#: templates/ajouter_manuel.html:5 templates/ajouter_utilisateur.html:7
+#: templates/login.html:12
+msgid "Retour"
+msgstr "Back"
+
+#: templates/ajouter_manuel.html:10
+msgid "Titre du manuel"
+msgstr "Manual title"
+
+#: templates/ajouter_manuel.html:11
+msgid "Ex: Manuel des procédures RH"
+msgstr "E.g.: HR Procedures Manual"
+
+#: templates/ajouter_manuel.html:14
+msgid "Catégorie"
+msgstr "Category"
+
+#: templates/ajouter_manuel.html:16
+msgid "Sélectionner…"
+msgstr "Select…"
+
+#: templates/ajouter_manuel.html:23
+msgid "Description"
+msgstr "Description"
+
+#: templates/ajouter_manuel.html:24
+msgid "Décrivez le contenu de ce manuel…"
+msgstr "Describe the content of this manual…"
+
+#: templates/ajouter_manuel.html:27
+msgid "Fichier PDF"
+msgstr "PDF file"
+
+#: templates/ajouter_manuel.html:30
+msgid "Glisser-déposer ou cliquer pour sélectionner"
+msgstr "Drag and drop or click to select"
+
+#: templates/ajouter_manuel.html:31
+msgid "PDF uniquement · max 50 MB"
+msgstr "PDF only · max 50 MB"
+
+#: templates/ajouter_manuel.html:37
+msgid "Annuler"
+msgstr "Cancel"
+
+#: templates/ajouter_manuel.html:38
+msgid "Enregistrer"
+msgstr "Save"
+
+#: templates/ajouter_utilisateur.html:2
+msgid "Ajouter un utilisateur"
+msgstr "Add a user"
+
+#: templates/ajouter_utilisateur.html:14
+msgid "Prénom"
+msgstr "First name"
+
+#: templates/ajouter_utilisateur.html:15
+msgid "Ex: Assiatou"
+msgstr "E.g.: Assiatou"
+
+#: templates/ajouter_utilisateur.html:18
+msgid "Nom"
+msgstr "Last name"
+
+#: templates/ajouter_utilisateur.html:19
+msgid "Ex: Badiane"
+msgstr "E.g.: Badiane"
+
+#: templates/ajouter_utilisateur.html:22 templates/login.html:36
+msgid "Email"
+msgstr "Email"
+
+#: templates/ajouter_utilisateur.html:26 templates/login.html:40
+msgid "Mot de passe"
+msgstr "Password"
+
+#: templates/ajouter_utilisateur.html:30
+msgid "Rôle"
+msgstr "Role"
+
+#: templates/ajouter_utilisateur.html:32
+msgid "Employé"
+msgstr "Employee"
+
+#: templates/ajouter_utilisateur.html:33
+msgid "Administrateur"
+msgstr "Administrator"
+
+#: templates/ajouter_utilisateur.html:37
+msgid "Créer l'utilisateur"
+msgstr "Create user"
+
+#: templates/assistant.html:2 templates/landing.html:42
+#: templates/landing.html:108 templates/landing.html:139
+msgid "Assistant IA"
+msgstr "AI Assistant"
+
+#: templates/assistant.html:11
+msgid "Conversations"
+msgstr "Conversations"
+
+#: templates/assistant.html:14
+msgid "Nouvelle question"
+msgstr "New question"
+
+#: templates/assistant.html:16
+msgid "HISTORIQUE"
+msgstr "HISTORY"
+
+#: templates/assistant.html:39
+msgid "Assistant IA — Llama 3"
+msgstr "AI Assistant — Llama 3"
+
+#: templates/assistant.html:40
+msgid "En ligne"
+msgstr "Online"
+
+#: templates/assistant.html:43
+msgid "Nouvelle discussion"
+msgstr "New discussion"
+
+#: templates/assistant.html:60 templates/base.html:144
+msgid "Bonjour"
+msgstr "Hello"
+
+#: templates/assistant.html:60
+msgid ""
+"Je suis votre assistant SONACOS. Comment puis-je vous aider dans vos "
+"démarches aujourd'hui ?"
+msgstr "I'm your SONACOS assistant. How can I help you with your tasks today?"
+
+#: templates/assistant.html:66
+msgid "Manuel :"
+msgstr "Manual:"
+
+#: templates/assistant.html:75
+msgid "Posez votre question..."
+msgstr "Ask your question..."
+
+#: templates/assistant.html:78
+msgid "Joindre un fichier"
+msgstr "Attach a file"
+
+#: templates/assistant.html:84
+msgid "Réponse basée sur les manuels officiels de la SONACOS"
+msgstr "Answer based on SONACOS official manuals"
+
+#: templates/assistant.html:98 templates/historique.html:35
+msgid "Supprimer cette conversation ?"
+msgstr "Delete this conversation?"
+
+#: templates/assistant.html:99
+msgid "Nouvelle conversation démarrée. Comment puis-je vous aider ?"
+msgstr "New conversation started. How can I help you?"
+
+#: templates/assistant.html:100
+msgid "Chargement..."
+msgstr "Loading..."
+
+#: templates/assistant.html:101
+msgid "Aucun message dans cette conversation."
+msgstr "No messages in this conversation."
+
+#: templates/assistant.html:102
+msgid "Erreur de chargement."
+msgstr "Loading error."
+
+#: templates/assistant.html:103
+msgid "Réponse"
+msgstr "Answer"
+
+#: templates/assistant.html:104
+msgid "Références documentaires"
+msgstr "Document references"
+
+#: templates/assistant.html:105
+msgid "Erreur :"
+msgstr "Error:"
+
+#: templates/base.html:94
+msgid "AssIA"
+msgstr "AssIA"
+
+#: templates/base.html:97 templates/historique.html:2
+msgid "Historique"
+msgstr "History"
+
+#: templates/base.html:113
+msgid "Déconnexion"
+msgstr "Logout"
+
+#: templates/base.html:144
+msgid "Je suis AssIA votre assistant IA SONACOS."
+msgstr "I'm AssIA, your SONACOS AI assistant."
+
+#: templates/base.html:145
+msgid "Posez-moi une question →"
+msgstr "Ask me a question →"
+
+#: templates/faq.html:2
+msgid "FAQ"
+msgstr "FAQ"
+
+#: templates/faq.html:6
+msgid "Retrouvez les réponses aux questions les plus posées par les employés."
+msgstr "Find answers to the most frequently asked questions by employees."
+
+#: templates/historique.html:8
+msgid "Historique des conversations"
+msgstr "Conversation history"
+
+#: templates/historique.html:9
+msgid "Retrouvez et gérez vos échanges passés avec l'assistant intelligent."
+msgstr "Find and manage your past exchanges with the intelligent assistant."
+
+#: templates/historique.html:13
+msgid "Rechercher par titre ou tag..."
+msgstr "Search by title or tag..."
+
+#: templates/historique.html:25
+msgid "Créée le :"
+msgstr "Created on:"
+
+#: templates/historique.html:26
+msgid "MESSAGES"
+msgstr "MESSAGES"
+
+#: templates/historique.html:32
+msgid "Ouvrir"
+msgstr "Open"
+
+#: templates/historique.html:47
+msgid "Effacer tout l'historique ? Cette action est irréversible."
+msgstr "Clear all history? This action is irreversible."
+
+#: templates/historique.html:49
+msgid "Effacer tout"
+msgstr "Clear all"
+
+#: templates/landing.html:6
+msgid "SONACOS — Plateforme Assistant IA"
+msgstr "SONACOS — AI Assistant Platform"
+
+#: templates/landing.html:22 templates/landing.html:35 templates/login.html:46
+msgid "Se connecter"
+msgstr "Log in"
+
+#: templates/landing.html:30
+msgid "Bienvenue sur la"
+msgstr "Welcome to the"
+
+#: templates/landing.html:31
+msgid "plateforme SONACOS"
+msgstr "SONACOS platform"
+
+#: templates/landing.html:33
+msgid "Centralisez, interrogez et optimisez vos"
+msgstr "Centralize, query, and optimize your"
+
+#: templates/landing.html:33
+msgid "processus opérationnels."
+msgstr "operational processes."
+
+#: templates/landing.html:100
+msgid "Accédez à tous les manuels de procédures de l'entreprise"
+msgstr "Access all of the company's procedure manuals"
+
+#: templates/landing.html:101 templates/manuels.html:42
+msgid "Consulter"
+msgstr "View"
+
+#: templates/landing.html:109
+msgid "Posez vos questions en langage naturel et obtenez des réponses précises"
+msgstr "Ask your questions in natural language and get precise answers"
+
+#: templates/landing.html:110
+msgid "Interroger"
+msgstr "Ask"
+
+#: templates/landing.html:118
+msgid "Retrouvez les réponses aux questions les plus posées par les employés"
+msgstr "Find answers to the most frequently asked questions by employees"
+
+#: templates/landing.html:119
+msgid "Découvrir"
+msgstr "Discover"
+
+#: templates/landing.html:132
+msgid "Plateforme intelligente d'assistance documentaire"
+msgstr "Intelligent document assistance platform"
+
+#: templates/landing.html:133
+msgid "Développé par"
+msgstr "Developed by"
+
+#: templates/landing.html:133
+msgid "Stagiaire Génie Logiciel & SI"
+msgstr "Software Engineering & IS Intern"
+
+#: templates/landing.html:137
+msgid "Navigation"
+msgstr "Navigation"
+
+#: templates/landing.html:143
+msgid "Plateforme Assistant IA"
+msgstr "AI Assistant Platform"
+
+#: templates/login.html:6
+msgid "Connexion"
+msgstr "Login"
+
+#: templates/login.html:24
+msgid "Accès à votre espace de travail"
+msgstr "Access your workspace"
+
+#: templates/login.html:48
+msgid "Mot de passe oublié ?"
+msgstr "Forgot password?"
+
+#: templates/manuel_detail.html:6
+msgid "Retour aux manuels"
+msgstr "Back to manuals"
+
+#: templates/manuel_detail.html:15 templates/manuels.html:37
+msgid "pages"
+msgstr "pages"
+
+#: templates/manuel_detail.html:17 templates/manuels.html:38
+msgid "Mis à jour le"
+msgstr "Updated on"
+
+#: templates/manuel_detail.html:24
+msgid "Télécharger le PDF"
+msgstr "Download PDF"
+
+#: templates/manuel_detail.html:27
+msgid "Interroger l'IA sur ce manuel"
+msgstr "Ask the AI about this manual"
+
+#: templates/manuels.html:9
+msgid "Manuels de procédures"
+msgstr "Procedure manuals"
+
+#: templates/manuels.html:10
+msgid ""
+"Accédez à l'ensemble des référentiels opérationnels et guides "
+"méthodologiques de la SONACOS."
+msgstr "Access all of SONACOS's operational references and methodology guides."
+
+#: templates/manuels.html:16
+msgid "Rechercher un manuel..."
+msgstr "Search for a manual..."
+
+#: templates/manuels.html:45
+msgid "Télécharger"
+msgstr "Download"
+
+#: templates/manuels.html:52
+msgid "Aucun manuel trouvé."
+msgstr "No manual found."
+
+#: templates/manuels.html:60
+msgid "Besoin d'un manuel spécifique ?"
+msgstr "Need a specific manual?"
+
+#: templates/manuels.html:61
+msgid ""
+"Si vous ne trouvez pas le document nécessaire à votre mission, vous "
+"pouvez effectuer une demande auprès du département Qualité ou utiliser "
+"l'assistant IA."
+msgstr ""
+"If you can't find the document you need for your task, you can submit a "
+"request to the Quality department or use the AI assistant."
+
+#: templates/manuels.html:63
+msgid "Consulter les FAQ"
+msgstr "View the FAQ"
+
+#~ msgid "Autre"
+#~ msgstr "Other"
+

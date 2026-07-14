@@ -1,42 +1,41 @@
 {% extends "base.html" %}
-{% block title %}Ajouter un manuel — SONACOS{% endblock %}
+{% block title %}{{ _('Ajouter un manuel') }} — SONACOS{% endblock %}
 {% block content %}
 <div class="page-form">
-  <a href="{{ url_for('administration') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> Retour</a>
+  <a href="{{ url_for('administration') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> {{ _('Retour') }}</a>
   <div class="form-card">
-    <h1><i class="fas fa-plus-circle" style="color:#2d7a27"></i> Ajouter un manuel</h1>
+    <h1><i class="fas fa-plus-circle" style="color:#2d7a27"></i> {{ _('Ajouter un manuel') }}</h1>
     <form method="POST" enctype="multipart/form-data">
       <div class="form-group">
-        <label>Titre du manuel</label>
-        <input type="text" name="titre" placeholder="Ex: Manuel des procédures RH" required>
+        <label>{{ _('Titre du manuel') }}</label>
+        <input type="text" name="titre" placeholder="{{ _('Ex: Manuel des procédures RH') }}" required>
       </div>
       <div class="form-group">
-        <label>Catégorie</label>
+        <label>{{ _('Catégorie') }}</label>
         <select name="categorie" required>
-          <option value="">Sélectionner…</option>
+          <option value="">{{ _('Sélectionner…') }}</option>
           {% for cat in categories %}
           <option value="{{ cat }}">{{ cat }}</option>
           {% endfor %}
-          <option value="Autre">Autre</option>
         </select>
       </div>
       <div class="form-group">
-        <label>Description</label>
-        <textarea name="description" rows="4" placeholder="Décrivez le contenu de ce manuel…"></textarea>
+        <label>{{ _('Description') }}</label>
+        <textarea name="description" rows="4" placeholder="{{ _('Décrivez le contenu de ce manuel…') }}"></textarea>
       </div>
       <div class="form-group">
-        <label>Fichier PDF</label>
+        <label>{{ _('Fichier PDF') }}</label>
         <div class="file-drop" id="fileDrop" onclick="document.getElementById('pdfInput').click()">
           <i class="fas fa-cloud-upload-alt"></i>
-          <p>Glisser-déposer ou cliquer pour sélectionner</p>
-          <small>PDF uniquement · max 50 MB</small>
+          <p>{{ _('Glisser-déposer ou cliquer pour sélectionner') }}</p>
+          <small>{{ _('PDF uniquement · max 50 MB') }}</small>
           <input type="file" id="pdfInput" name="fichier" accept=".pdf" style="display:none" onchange="showFileName(this)">
         </div>
         <div id="fileNameDisplay" style="margin-top:.5rem; color:#2d7a27; font-size:.9rem;"></div>
       </div>
       <div class="form-actions">
-        <a href="{{ url_for('administration') }}" class="btn-cancel">Annuler</a>
-        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> Enregistrer</button>
+        <a href="{{ url_for('administration') }}" class="btn-cancel">{{ _('Annuler') }}</a>
+        <button type="submit" class="btn-submit"><i class="fas fa-save"></i> {{ _('Enregistrer') }}</button>
       </div>
     </form>
   </div>

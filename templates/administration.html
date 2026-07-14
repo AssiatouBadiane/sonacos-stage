@@ -1,37 +1,37 @@
 {% extends "base.html" %}
-{% block title %}Administration — SONACOS{% endblock %}
+{% block title %}{{ _('Administration') }} — SONACOS{% endblock %}
 
 {% block content %}
 <div class="page-admin">
-  <h1><i class="fas fa-cog" style="color:#2d7a27"></i> Administration</h1>
-  <p class="page-subtitle">Gestion centralisée de la plateforme</p>
+  <h1><i class="fas fa-cog" style="color:#2d7a27"></i> {{ _('Administration') }}</h1>
+  <p class="page-subtitle">{{ _('Gestion centralisée de la plateforme') }}</p>
 
   <!-- STATS CARDS -->
   <div class="admin-stats-grid">
     <div class="admin-stat-card">
       <div class="astat-header">
-        <span>Utilisateurs actifs</span>
+        <span>{{ _('Utilisateurs actifs') }}</span>
         <span class="trend green">↗ +12%</span>
       </div>
       <div class="astat-number">{{ stats.utilisateurs_actifs }}</div>
     </div>
     <div class="admin-stat-card">
       <div class="astat-header">
-        <span>Manuels publiés</span>
+        <span>{{ _('Manuels publiés') }}</span>
         <span class="trend green">↗ +3</span>
       </div>
       <div class="astat-number">{{ stats.manuels_publies }}</div>
     </div>
     <div class="admin-stat-card">
       <div class="astat-header">
-        <span>Questions au chatbot</span>
+        <span>{{ _('Questions au chatbot') }}</span>
         <span class="trend green">↗ +24%</span>
       </div>
       <div class="astat-number">{{ "{:,}".format(stats.questions_chatbot) }}</div>
     </div>
     <div class="admin-stat-card">
       <div class="astat-header">
-        <span>Chunks indexés</span>
+        <span>{{ _('Chunks indexés') }}</span>
       </div>
       <div class="astat-number">{{ "{:,}".format(stats.chunks_indexes) }}</div>
     </div>
@@ -39,25 +39,25 @@
 
   <!-- TABS -->
   <div class="admin-tabs">
-    <button class="tab-btn active" onclick="showTab('utilisateurs', this)"><i class="fas fa-users"></i> Utilisateurs</button>
-    <button class="tab-btn" onclick="showTab('manuels', this)"><i class="fas fa-file-alt"></i> Manuels</button>
-    <button class="tab-btn" onclick="showTab('stats', this)"><i class="fas fa-chart-bar"></i> Statistiques</button>
-    <button class="tab-btn" onclick="showTab('params', this)"><i class="fas fa-sliders-h"></i> Paramètres</button>
+    <button class="tab-btn active" onclick="showTab('utilisateurs', this)"><i class="fas fa-users"></i> {{ _('Utilisateurs') }}</button>
+    <button class="tab-btn" onclick="showTab('manuels', this)"><i class="fas fa-file-alt"></i> {{ _('Manuels') }}</button>
+    <button class="tab-btn" onclick="showTab('stats', this)"><i class="fas fa-chart-bar"></i> {{ _('Statistiques') }}</button>
+    <button class="tab-btn" onclick="showTab('params', this)"><i class="fas fa-sliders-h"></i> {{ _('Paramètres') }}</button>
   </div>
 
   <!-- TAB: UTILISATEURS -->
   <div class="tab-panel active" id="tab-utilisateurs">
     <div class="panel-header">
       <div>
-        <strong>Gestion des utilisateurs</strong>
-        <p>Comptes, rôles et permissions</p>
+        <strong>{{ _('Gestion des utilisateurs') }}</strong>
+        <p>{{ _('Comptes, rôles et permissions') }}</p>
       </div>
-      <a href="{{ url_for('ajouter_utilisateur') }}" class="btn-add"><i class="fas fa-plus"></i> Nouvel utilisateur</a>
+      <a href="{{ url_for('ajouter_utilisateur') }}" class="btn-add"><i class="fas fa-plus"></i> {{ _('Nouvel utilisateur') }}</a>
     </div>
     <table class="admin-table">
       <thead>
         <tr>
-          <th>NOM</th><th>EMAIL</th><th>RÔLE</th><th>ACTIONS</th>
+          <th>{{ _('NOM') }}</th><th>{{ _('EMAIL') }}</th><th>{{ _('RÔLE') }}</th><th>{{ _('ACTIONS') }}</th>
         </tr>
       </thead>
       <tbody>
@@ -69,11 +69,11 @@
           <td>
             {% if u.id_utilisateur != session.get('user_id') %}
             <form method="POST" action="{{ url_for('supprimer_utilisateur', id=u.id_utilisateur) }}"
-                  style="display:inline" class="confirm-form" data-message="Supprimer cet utilisateur ?">
-              <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
+                  style="display:inline" class="confirm-form" data-message="{{ _('Supprimer cet utilisateur ?') }}">
+              <button type="submit" class="btn-icon-sm danger" title="{{ _('Supprimer') }}"><i class="fas fa-trash"></i></button>
             </form>
             {% else %}
-            <span style="color:#999;">Vous</span>
+            <span style="color:#999;">{{ _('Vous') }}</span>
             {% endif %}
           </td>
         </tr>
@@ -86,14 +86,14 @@
 <div class="tab-panel" id="tab-manuels">
   <div class="panel-header">
     <div>
-      <strong>Gestion des manuels</strong>
-      <p>Base documentaire technique et opérationnelle</p>
+      <strong>{{ _('Gestion des manuels') }}</strong>
+      <p>{{ _('Base documentaire technique et opérationnelle') }}</p>
     </div>
-    <a href="{{ url_for('ajouter_manuel') }}" class="btn-add"><i class="fas fa-plus"></i> Ajouter un manuel</a>
+    <a href="{{ url_for('ajouter_manuel') }}" class="btn-add"><i class="fas fa-plus"></i> {{ _('Ajouter un manuel') }}</a>
   </div>
   <table class="admin-table">
     <thead>
-      <tr><th>TITRE</th><th>CATÉGORIE</th><th>PAGES</th><th>DATE</th><th>ACTIONS</th></tr>
+      <tr><th>{{ _('TITRE') }}</th><th>{{ _('CATÉGORIE') }}</th><th>{{ _('PAGES') }}</th><th>{{ _('DATE') }}</th><th>{{ _('ACTIONS') }}</th></tr>
     </thead>
     <tbody>
       {% for m in manuels %}
@@ -103,10 +103,10 @@
         <td>{{ m.nb_pages }}</td>
         <td>{{ m.date_ajout }}</td>
         <td>
-          <a href="{{ url_for('manuel_detail', id=m.id_manuel) }}" class="btn-icon-sm" title="Voir"><i class="fas fa-eye"></i></a>
+          <a href="{{ url_for('manuel_detail', id=m.id_manuel) }}" class="btn-icon-sm" title="{{ _('Voir') }}"><i class="fas fa-eye"></i></a>
           <form method="POST" action="{{ url_for('supprimer_manuel', id=m.id_manuel) }}"
-                style="display:inline" class="confirm-form" data-message="Supprimer ce manuel ?">
-            <button type="submit" class="btn-icon-sm danger" title="Supprimer"><i class="fas fa-trash"></i></button>
+                style="display:inline" class="confirm-form" data-message="{{ _('Supprimer ce manuel ?') }}">
+            <button type="submit" class="btn-icon-sm danger" title="{{ _('Supprimer') }}"><i class="fas fa-trash"></i></button>
           </form>
         </td>
       </tr>
@@ -117,15 +117,15 @@
 
   <!-- TAB: STATS -->
   <div class="tab-panel" id="tab-stats">
-    <p style="padding:2rem; color:#666;">Graphiques et statistiques — (nombre de connexion ou autre )</p>
+    <p style="padding:2rem; color:#666;">{{ _('Graphiques et statistiques — (nombre de connexion ou autre )') }}</p>
   </div>
 
 <!-- TAB: PARAMS -->
 <div class="tab-panel" id="tab-params">
   <div class="panel-header">
     <div>
-      <strong>Paramètres de l'interface</strong>
-      <p>Personnalisez votre expérience sur la plateforme</p>
+      <strong>{{ _("Paramètres de l'interface") }}</strong>
+      <p>{{ _('Personnalisez votre expérience sur la plateforme') }}</p>
     </div>
   </div>
   <div class="params-section">
@@ -135,12 +135,12 @@
       <div class="param-info">
         <i class="fas fa-moon" style="color:#6c63ff; font-size:1.5rem;"></i>
         <div>
-          <strong>Thème de l'interface</strong>
-          <p>Basculer entre le mode clair et le mode sombre</p>
+          <strong>{{ _("Thème de l'interface") }}</strong>
+          <p>{{ _('Basculer entre le mode clair et le mode sombre') }}</p>
         </div>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" id="themeToggle" onchange="toggleTheme(this)">
+        <input type="checkbox" id="themeToggle" class="theme-toggle-input" onchange="toggleTheme()">
         <span class="toggle-slider"></span>
       </label>
     </div>
@@ -150,13 +150,13 @@
       <div class="param-info">
         <i class="fas fa-globe" style="color:#2d7a27; font-size:1.5rem;"></i>
         <div>
-          <strong>Langue de l'interface</strong>
-          <p>Choisissez la langue d'affichage</p>
+          <strong>{{ _("Langue de l'interface") }}</strong>
+          <p>{{ _("Choisissez la langue d'affichage") }}</p>
         </div>
       </div>
-      <select id="langSelect" onchange="changeLangue(this.value)" class="select-langue">
-        <option value="fr">🇫🇷 Français</option>
-        <option value="en">🇬🇧 English</option>
+      <select id="langSelect" onchange="window.location.href='/set-langue/' + this.value" class="select-langue">
+        <option value="fr" {% if get_locale() == 'fr' %}selected{% endif %}>🇫🇷 Français</option>
+        <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>🇬🇧 English</option>
       </select>
     </div>
 
@@ -168,8 +168,8 @@
     <div class="status-left">
       <div class="status-dot-green"></div>
       <div>
-        <strong>État de la plateforme</strong>
-        <p>Tous les services sont opérationnels. Dernière synchronisation il y a 5 minutes.</p>
+        <strong>{{ _('État de la plateforme') }}</strong>
+        <p>{{ _('Tous les services sont opérationnels. Dernière synchronisation il y a 5 minutes.') }}</p>
       </div>
     </div>
   </div>
@@ -184,45 +184,5 @@ function showTab(name, btn) {
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
 }
-
-// Thème
-function toggleTheme(el) {
-  if (el.checked) {
-    document.body.classList.add('dark-mode');
-    localStorage.setItem('theme', 'dark');
-  } else {
-    document.body.classList.remove('dark-mode');
-    localStorage.setItem('theme', 'light');
-  }
-}
-
-// Langue
-function changeLangue(val) {
-  localStorage.setItem('langue', val);
-  showLangueToast(val === 'en' ? 'Language set to English. Full translation coming soon.' : 'Langue définie sur Français.');
-}
-
-function showLangueToast(msg) {
-  const toast = document.createElement('div');
-  toast.className = 'flash flash-info';
-  toast.style.position = 'fixed';
-  toast.style.bottom = '20px';
-  toast.style.right = '20px';
-  toast.style.zIndex = '9998';
-  toast.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
-
-// Appliquer au chargement
-window.addEventListener('DOMContentLoaded', () => {
-  const theme = localStorage.getItem('theme');
-  if (theme === 'dark') {
-    document.body.classList.add('dark-mode');
-    document.getElementById('themeToggle').checked = true;
-  }
-  const langue = localStorage.getItem('langue');
-  if (langue) document.getElementById('langSelect').value = langue;
-});
 </script>
 {% endblock %}

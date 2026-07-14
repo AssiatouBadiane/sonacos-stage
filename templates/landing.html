@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SONACOS — Plateforme Assistant IA</title>
+  <title>{{ _('SONACOS — Plateforme Assistant IA') }}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -18,8 +18,8 @@
      </a>
     </div>
   <div class="landing-nav-links">
-    <a href="#" class="nav-link-light active">Accueil</a>
-    <a href="{{ url_for('login') }}" class="btn-connect">Se connecter</a>
+    <a href="#" class="nav-link-light active">{{ _('Accueil') }}</a>
+    <a href="{{ url_for('login') }}" class="btn-connect">{{ _('Se connecter') }}</a>
   </div>
 </nav>
 
@@ -27,19 +27,19 @@
 <section class="hero-section">
   <div class="hero-content">
     <h1 class="hero-title">
-      Bienvenue sur la<br>
-      <span class="hero-highlight">plateforme SONACOS</span>
+      {{ _('Bienvenue sur la') }}<br>
+      <span class="hero-highlight">{{ _('plateforme SONACOS') }}</span>
     </h1>
-    <p class="hero-subtitle">Centralisez, interrogez et optimisez vos<br>processus opérationnels.</p>
+    <p class="hero-subtitle">{{ _('Centralisez, interrogez et optimisez vos') }}<br>{{ _('processus opérationnels.') }}</p>
     <a href="{{ url_for('login') }}" class="btn-hero">
-      Se connecter <i class="fas fa-arrow-right"></i>
+      {{ _('Se connecter') }} <i class="fas fa-arrow-right"></i>
     </a>
   </div>
 
   <!-- MASCOT HERO -->
   <div class="hero-mascot">
     <div class="mascot-sign">
-      <div class="sign-board">Assistant IA</div>
+      <div class="sign-board">{{ _('Assistant IA') }}</div>
     </div>
     <svg class="hero-mascot-svg" viewBox="0 0 160 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -96,27 +96,27 @@
     <div class="feature-icon green">
       <i class="fas fa-file-alt"></i>
     </div>
-    <h3>Manuels disponibles</h3>
-    <p>Accédez à tous les manuels de procédures de l'entreprise</p>
-    <a href="{{ url_for('login') }}" class="btn-feature green">Consulter <i class="fas fa-arrow-right"></i></a>
+    <h3>{{ _('Manuels disponibles') }}</h3>
+    <p>{{ _("Accédez à tous les manuels de procédures de l'entreprise") }}</p>
+    <a href="{{ url_for('login') }}" class="btn-feature green">{{ _('Consulter') }} <i class="fas fa-arrow-right"></i></a>
   </div>
 
   <div class="feature-card">
     <div class="feature-icon yellow">
       <i class="fas fa-comments"></i>
     </div>
-    <h3>Assistant IA</h3>
-    <p>Posez vos questions en langage naturel et obtenez des réponses précises</p>
-    <a href="{{ url_for('login') }}" class="btn-feature yellow">Interroger <i class="fas fa-arrow-right"></i></a>
+    <h3>{{ _('Assistant IA') }}</h3>
+    <p>{{ _('Posez vos questions en langage naturel et obtenez des réponses précises') }}</p>
+    <a href="{{ url_for('login') }}" class="btn-feature yellow">{{ _('Interroger') }} <i class="fas fa-arrow-right"></i></a>
   </div>
 
   <div class="feature-card">
     <div class="feature-icon red">
       <i class="fas fa-question-circle"></i>
     </div>
-    <h3>Questions fréquentes</h3>
-    <p>Retrouvez les réponses aux questions les plus posées par les employés</p>
-    <a href="{{ url_for('login') }}" class="btn-feature red">Découvrir <i class="fas fa-arrow-right"></i></a>
+    <h3>{{ _('Questions fréquentes') }}</h3>
+    <p>{{ _('Retrouvez les réponses aux questions les plus posées par les employés') }}</p>
+    <a href="{{ url_for('login') }}" class="btn-feature red">{{ _('Découvrir') }} <i class="fas fa-arrow-right"></i></a>
   </div>
 </section>
 
@@ -129,18 +129,18 @@
     </svg>
     <div>
       <strong>SONACOS</strong>
-      <p>Plateforme intelligente d'assistance documentaire</p>
-      <small>Développé par <em>Assiatou Badiane</em> — Stagiaire Génie Logiciel &amp; SI</small>
+      <p>{{ _("Plateforme intelligente d'assistance documentaire") }}</p>
+      <small>{{ _('Développé par') }} <em>Assiatou Badiane</em> — {{ _('Stagiaire Génie Logiciel & SI') }}</small>
     </div>
   </div>
   <div class="footer-nav">
-    <strong>Navigation</strong>
-    <a href="#">› Accueil</a>
-    <a href="{{ url_for('login') }}">› Assistant IA</a>
-    <a href="{{ url_for('login') }}">› Manuels</a>
+    <strong>{{ _('Navigation') }}</strong>
+    <a href="#">› {{ _('Accueil') }}</a>
+    <a href="{{ url_for('login') }}">› {{ _('Assistant IA') }}</a>
+    <a href="{{ url_for('login') }}">› {{ _('Manuels') }}</a>
   </div>
   <div class="footer-bottom">
-    <p>© 2026 SONACOS — Plateforme Assistant IA</p>
+    <p>© 2026 SONACOS — {{ _('Plateforme Assistant IA') }}</p>
   </div>
 </footer>
 

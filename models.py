@@ -64,6 +64,16 @@ class Chunk(db.Model):
     id_manuel = db.Column(db.Integer, db.ForeignKey('manuel.id_manuel'))
     embedding = db.Column(db.Text)
 
+class Chapitre(db.Model):
+    __tablename__ = 'chapitre'
+    id_chapitre = db.Column(db.Integer, primary_key=True)
+    id_manuel = db.Column(db.Integer, db.ForeignKey('manuel.id_manuel'), nullable=False)
+    numero = db.Column(db.Integer, nullable=False)
+    titre = db.Column(db.String(500))
+    page_debut = db.Column(db.Integer, nullable=False)
+    page_fin = db.Column(db.Integer)
+
+    manuel = db.relationship('Manuel', backref=db.backref('chapitres', cascade='all, delete-orphan'))
 
 class Conversation(db.Model):
     __tablename__ = 'conversation'
@@ -72,8 +82,10 @@ class Conversation(db.Model):
     titre = db.Column(db.String(255))
     date_creation = db.Column(db.DateTime, default=datetime.utcnow)
     id_utilisateur = db.Column(db.Integer, db.ForeignKey('utilisateur.id_utilisateur'))
+    id_manuel = db.Column(db.Integer, db.ForeignKey('manuel.id_manuel'), nullable=True)  # ← AJOUT
 
     interactions = db.relationship('Interaction', backref='conversation', cascade='all, delete-orphan')
+    manuel = db.relationship('Manuel')  # ← AJOUT
 
 
 class Interaction(db.Model):

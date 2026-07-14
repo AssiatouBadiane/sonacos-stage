@@ -1,19 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Manuels — SONACOS{% endblock %}
+{% block title %}{{ _('Manuels') }} — SONACOS{% endblock %}
 
 {% block content %}
 <div class="page-manuels">
 
   <div class="page-header-row">
     <div>
-      <h1><i class="fas fa-book" style="color:#2d7a27"></i> Manuels de procédures</h1>
-      <p>Accédez à l'ensemble des référentiels opérationnels et guides méthodologiques de la SONACOS.</p>
+      <h1><i class="fas fa-book" style="color:#2d7a27"></i> {{ _('Manuels de procédures') }}</h1>
+      <p>{{ _("Accédez à l'ensemble des référentiels opérationnels et guides méthodologiques de la SONACOS.") }}</p>
     </div>
     <div class="filter-bar">
       <form method="GET" action="{{ url_for('manuels') }}" class="search-form">
         <div class="search-input-wrap">
           <i class="fas fa-search"></i>
-          <input type="text" name="search" placeholder="Rechercher un manuel..." value="{{ request.args.get('search','') }}">
+          <input type="text" name="search" placeholder="{{ _('Rechercher un manuel...') }}" value="{{ request.args.get('search','') }}">
         </div>
         <select name="categorie" onchange="this.form.submit()">
           {% for cat in categories %}
@@ -34,22 +34,22 @@
       <h3>{{ m.titre }}</h3>
       <p>{{ m.description }}</p>
       <div class="manuel-meta">
-        <i class="fas fa-file-pdf"></i> {{ m.pages }} pages · PDF · {{ m.taille }}
-        <span class="manuel-date">Mis à jour le {{ m.date_ajout }}</span>
+        <i class="fas fa-file-pdf"></i> {{ m.pages }} {{ _('pages') }} · PDF · {{ m.taille }}
+        <span class="manuel-date">{{ _('Mis à jour le') }} {{ m.date_ajout }}</span>
       </div>
       <div class="manuel-actions">
         <a href="{{ url_for('manuel_detail', id=m.id) }}" class="btn-consult">
-          <i class="fas fa-eye"></i> Consulter
+          <i class="fas fa-eye"></i> {{ _('Consulter') }}
         </a>
         <a href="{{ url_for('uploaded_file', filename=m.chemin_fichier|replace('uploads/', '')|replace('uploads\\', '')) }}" class="btn-download" target="_blank">
-          <i class="fas fa-download"></i> Télécharger
+          <i class="fas fa-download"></i> {{ _('Télécharger') }}
         </a>
       </div>
     </div>
     {% else %}
     <div class="empty-state">
       <i class="fas fa-search"></i>
-      <p>Aucun manuel trouvé.</p>
+      <p>{{ _('Aucun manuel trouvé.') }}</p>
     </div>
     {% endfor %}
   </div>
@@ -57,10 +57,10 @@
   <!-- CTA BOTTOM -->
   <div class="manuels-cta">
     <div class="cta-text">
-      <h3>Besoin d'un manuel spécifique ?</h3>
-      <p>Si vous ne trouvez pas le document nécessaire à votre mission, vous pouvez effectuer une demande auprès du département Qualité ou utiliser l'assistant IA.</p>
+      <h3>{{ _("Besoin d'un manuel spécifique ?") }}</h3>
+      <p>{{ _("Si vous ne trouvez pas le document nécessaire à votre mission, vous pouvez effectuer une demande auprès du département Qualité ou utiliser l'assistant IA.") }}</p>
       <div class="cta-buttons">
-        <a href="{{ url_for('faq') }}" class="btn-outline-dark">Consulter les FAQ</a>
+        <a href="{{ url_for('faq') }}" class="btn-outline-dark">{{ _('Consulter les FAQ') }}</a>
       </div>
     </div>
     <div class="cta-image">

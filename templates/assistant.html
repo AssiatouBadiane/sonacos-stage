@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Assistant IA — SONACOS{% endblock %}
+{% block title %}{{ _('Assistant IA') }} — SONACOS{% endblock %}
 
 {% block content %}
 <div class="assistant-layout">
@@ -8,12 +8,12 @@
   <aside class="chat-sidebar">
     <div class="sidebar-header">
       <i class="fas fa-arrow-left sidebar-back" onclick="history.back()"></i>
-      <span>Conversations</span>
+      <span>{{ _('Conversations') }}</span>
     </div>
     <button class="btn-new-conv" onclick="newConversation()">
-      <i class="fas fa-plus"></i> Nouvelle question
+      <i class="fas fa-plus"></i> {{ _('Nouvelle question') }}
     </button>
-    <div class="sidebar-section-label">HISTORIQUE</div>
+    <div class="sidebar-section-label">{{ _('HISTORIQUE') }}</div>
     <ul class="conv-list" id="convList">
   {% for conv in conversations %}
   <li class="conv-item" id="conv-{{ conv.id_conversation }}">
@@ -21,8 +21,8 @@
       <i class="fas fa-comment-dots"></i> {{ conv.titre }}
     </span>
     <form method="POST" action="{{ url_for('supprimer_conversation', id=conv.id_conversation) }}"
-          style="display:inline" onsubmit="return confirm('Supprimer cette conversation ?')">
-      <button type="submit" class="btn-delete-sidebar" title="Supprimer">
+          style="display:inline" onsubmit="return confirm(i18n.confirmDelete)">
+      <button type="submit" class="btn-delete-sidebar" title="{{ _('Supprimer') }}">
         <i class="fas fa-trash"></i>
       </button>
     </form>
@@ -36,11 +36,11 @@
     <div class="chat-header">
       <div class="chat-header-title">
         <div class="ai-status-dot"></div>
-        <span>Assistant IA — Llama 3</span>
-        <span class="status-online">● En ligne</span>
+        <span>{{ _('Assistant IA — Llama 3') }}</span>
+        <span class="status-online">● {{ _('En ligne') }}</span>
       </div>
       <div class="chat-header-actions">
-        <button class="btn-chat-action" onclick="newConversation()"><i class="fas fa-sync-alt"></i> Nouvelle discussion</button>
+        <button class="btn-chat-action" onclick="newConversation()"><i class="fas fa-sync-alt"></i> {{ _('Nouvelle discussion') }}</button>
         
       </div>
     </div>
@@ -57,22 +57,31 @@
           </svg>
         </div>
         <div class="msg-bubble">
-          <p>Bonjour {{ session.prenom }} ! Je suis votre assistant SONACOS. Comment puis-je vous aider dans vos démarches aujourd'hui ?</p>
+          <p>{{ _('Bonjour') }} {{ session.prenom }} ! {{ _('Je suis votre assistant SONACOS. Comment puis-je vous aider dans vos démarches aujourd\'hui ?') }}</p>
         </div>
       </div>
     </div>
 
+    <div class="chat-manuel-select">
+      <label for="manuelSelect"><i class="fas fa-book"></i> {{ _('Manuel :') }}</label>
+      <select id="manuelSelect">
+        {% for m in manuels %}
+        <option value="{{ m.id_manuel }}">{{ m.titre }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
     <div class="chat-input-area">
-      <textarea id="userInput" placeholder="Posez votre question..." rows="1"
+      <textarea id="userInput" placeholder="{{ _('Posez votre question...') }}" rows="1"
         onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
         oninput="autoResize(this)"></textarea>
-      <button class="btn-attach" title="Joindre un fichier"><i class="fas fa-paperclip"></i></button>
+      <button class="btn-attach" title="{{ _('Joindre un fichier') }}"><i class="fas fa-paperclip"></i></button>
       <button class="btn-send" id="sendBtn" onclick="sendMessage()">
         <i class="fas fa-paper-plane"></i>
       </button>
     </div>
     <div class="chat-disclaimer">
-      <i class="fas fa-bolt"></i> Réponse basée sur les manuels officiels de la SONACOS
+      <i class="fas fa-bolt"></i> {{ _('Réponse basée sur les manuels officiels de la SONACOS') }}
     </div>
   </div>
 </div>
@@ -81,6 +90,20 @@
 {% block scripts %}
 <script>
 const prenom = "{{ session.prenom }}";
+const currentLangue = "{{ get_locale() }}";
+let currentConversationId = null;
+
+// Dictionnaire des chaînes JS traduites, injecté depuis Jinja2/Flask-Babel
+const i18n = {
+  confirmDelete: "{{ _('Supprimer cette conversation ?') }}",
+  newConvMessage: "{{ _('Nouvelle conversation démarrée. Comment puis-je vous aider ?') }}",
+  loading: "{{ _('Chargement...') }}",
+  noMessages: "{{ _('Aucun message dans cette conversation.') }}",
+  loadError: "{{ _('Erreur de chargement.') }}",
+  reponseLabel: "{{ _('Réponse') }}",
+  sourcesLabel: "{{ _('Références documentaires') }}",
+  errorPrefix: "{{ _('Erreur :') }}"
+};
 
 function autoResize(el) {
   el.style.height = 'auto';
@@ -88,6 +111,8 @@ function autoResize(el) {
 }
 
 function newConversation() {
+  currentConversationId = null;
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
   const messages = document.getElementById('chatMessages');
   messages.innerHTML = `
     <div class="msg msg-ai">
@@ -99,16 +124,17 @@ function newConversation() {
           <circle cx="16" cy="22" r="2" fill="#1a1a2e"/><circle cx="26" cy="22" r="2" fill="#1a1a2e"/>
         </svg>
       </div>
-      <div class="msg-bubble"><p>Nouvelle conversation démarrée. Comment puis-je vous aider ?</p></div>
+      <div class="msg-bubble"><p>${i18n.newConvMessage}</p></div>
     </div>`;
 }
 
 async function loadConv(id) {
+  currentConversationId = id;
   document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
   document.getElementById('conv-' + id).classList.add('active');
 
   const messages = document.getElementById('chatMessages');
-  messages.innerHTML = '<div style="text-align:center; padding:2rem; color:#999;"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
+  messages.innerHTML = `<div style="text-align:center; padding:2rem; color:#999;"><i class="fas fa-spinner fa-spin"></i> ${i18n.loading}</div>`;
 
   try {
     const res = await fetch(`/api/conversation/${id}`);
@@ -133,16 +159,16 @@ async function loadConv(id) {
         <div class="msg msg-ai">
           ${aiAvatar}
           <div class="msg-bubble">
-            <div class="msg-title"><i class="fas fa-check-square"></i> Réponse</div>
+            <div class="msg-title"><i class="fas fa-check-square"></i> ${i18n.reponseLabel}</div>
             <p>${m.reponse.replace(/\n/g, '<br>')}</p>
           </div>
         </div>`;
     });
 
-    messages.innerHTML = html || '<div style="text-align:center; padding:2rem; color:#999;">Aucun message dans cette conversation.</div>';
+    messages.innerHTML = html || `<div style="text-align:center; padding:2rem; color:#999;">${i18n.noMessages}</div>`;
     messages.scrollTop = messages.scrollHeight;
   } catch(e) {
-    messages.innerHTML = '<div style="text-align:center; padding:2rem; color:#e53e3e;">Erreur de chargement.</div>';
+    messages.innerHTML = `<div style="text-align:center; padding:2rem; color:#e53e3e;">${i18n.loadError}</div>`;
   }
 }
 
@@ -182,13 +208,18 @@ async function sendMessage() {
   messages.scrollTop = messages.scrollHeight;
 
  try {
-    const langue = localStorage.getItem('langue') || 'fr';
+    // La langue vient désormais de la session serveur (Flask-Babel), plus de localStorage
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({question, langue})
+      body: JSON.stringify({question, langue: currentLangue, id_manuel: document.getElementById('manuelSelect').value, id_conversation: currentConversationId})
     });
     const data = await res.json();
+    const estNouvelleConv = !currentConversationId;
+    currentConversationId = data.id_conversation;
+    if (estNouvelleConv) {
+      ajouterConversationSidebar(data.id_conversation, question);
+    }
 
     // Formater réponse
     const formattedReponse = data.reponse.replace(/\n/g, '<br>');
@@ -207,19 +238,37 @@ async function sendMessage() {
           </svg>
         </div>
         <div class="msg-bubble">
-          <div class="msg-title"><i class="fas fa-check-square"></i> Réponse</div>
+          <div class="msg-title"><i class="fas fa-check-square"></i> ${i18n.reponseLabel}</div>
           <p>${formattedReponse}</p>
-          ${sourcesHtml ? `<div class="sources-section"><strong>Références documentaires</strong><div class="sources-chips">${sourcesHtml}</div></div>` : ''}
+          ${sourcesHtml ? `<div class="sources-section"><strong>${i18n.sourcesLabel}</strong><div class="sources-chips">${sourcesHtml}</div></div>` : ''}
         </div>
       </div>`;
   } catch(e) {
     document.getElementById(typingId).remove();
     console.error(e);
-    messages.innerHTML += `<div class="msg msg-ai"><div class="msg-bubble error-bubble"><p>Erreur : ${e.message}</p></div></div>`;
+    messages.innerHTML += `<div class="msg msg-ai"><div class="msg-bubble error-bubble"><p>${i18n.errorPrefix} ${e.message}</p></div></div>`;
   }
 
   btn.disabled = false;
   messages.scrollTop = messages.scrollHeight;
+}
+
+function ajouterConversationSidebar(id, question) {
+  document.querySelectorAll('.conv-item').forEach(el => el.classList.remove('active'));
+  const titre = question.length > 80 ? question.slice(0, 80) : question;
+  const li = document.createElement('li');
+  li.className = 'conv-item active';
+  li.id = 'conv-' + id;
+  li.innerHTML = `
+    <span onclick="loadConv(${id})" style="flex:1; cursor:pointer;">
+      <i class="fas fa-comment-dots"></i> ${escapeHtml(titre)}
+    </span>
+    <form method="POST" action="/historique/supprimer/${id}" style="display:inline" onsubmit="return confirm(i18n.confirmDelete)">
+      <button type="submit" class="btn-delete-sidebar" title="${i18n.confirmDelete}">
+        <i class="fas fa-trash"></i>
+      </button>
+    </form>`;
+  document.getElementById('convList').insertBefore(li, document.getElementById('convList').firstChild);
 }
 
 function escapeHtml(text) {

@@ -1,40 +1,40 @@
 {% extends "base.html" %}
-{% block title %}Ajouter un utilisateur — SONACOS{% endblock %}
+{% block title %}{{ _('Ajouter un utilisateur') }} — SONACOS{% endblock %}
 
 {% block content %}
 <div class="page-admin">
   <a href="{{ url_for('administration') }}" class="btn-back-link">
-    <i class="fas fa-arrow-left"></i> Retour
+    <i class="fas fa-arrow-left"></i> {{ _('Retour') }}
   </a>
-  <h1><i class="fas fa-user-plus" style="color:#2d7a27"></i> Nouvel utilisateur</h1>
+  <h1><i class="fas fa-user-plus" style="color:#2d7a27"></i> {{ _('Nouvel utilisateur') }}</h1>
 
   <div class="form-card">
     <form method="POST">
       <div class="form-group">
-        <label>Prénom</label>
-        <input type="text" name="prenom" required placeholder="Ex: Assiatou">
+        <label>{{ _('Prénom') }}</label>
+        <input type="text" name="prenom" required placeholder="{{ _('Ex: Assiatou') }}">
       </div>
       <div class="form-group">
-        <label>Nom</label>
-        <input type="text" name="nom" required placeholder="Ex: Badiane">
+        <label>{{ _('Nom') }}</label>
+        <input type="text" name="nom" required placeholder="{{ _('Ex: Badiane') }}">
       </div>
       <div class="form-group">
-        <label>Email</label>
+        <label>{{ _('Email') }}</label>
         <input type="email" name="email" required placeholder="ex@sonacos.sn">
       </div>
       <div class="form-group">
-        <label>Mot de passe</label>
+        <label>{{ _('Mot de passe') }}</label>
         <input type="password" name="password" required placeholder="••••••••">
       </div>
       <div class="form-group">
-        <label>Rôle</label>
+        <label>{{ _('Rôle') }}</label>
         <select name="role">
-          <option value="employe">Employé</option>
-          <option value="admin">Administrateur</option>
+          <option value="employe">{{ _('Employé') }}</option>
+          <option value="admin">{{ _('Administrateur') }}</option>
         </select>
       </div>
       <button type="submit" class="btn-add">
-        <i class="fas fa-check"></i> Créer l'utilisateur
+        <i class="fas fa-check"></i> {{ _("Créer l'utilisateur") }}
       </button>
     </form>
   </div>

@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="page-detail">
-  <a href="{{ url_for('manuels') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> Retour aux manuels</a>
+  <a href="{{ url_for('manuels') }}" class="btn-back-link"><i class="fas fa-arrow-left"></i> {{ _('Retour aux manuels') }}</a>
   <div class="detail-card">
     <div class="detail-header">
       <div class="detail-icon"><i class="fas fa-book-open"></i></div>
@@ -12,19 +12,19 @@
         <h1>{{ manuel.titre }}</h1>
         <p>{{ manuel.description }}</p>
         <div class="detail-meta">
-          <span><i class="fas fa-file-pdf"></i> {{ manuel.nb_pages }} pages</span>
+          <span><i class="fas fa-file-pdf"></i> {{ manuel.nb_pages }} {{ _('pages') }}</span>
           <span><i class="fas fa-hdd"></i> {{ manuel.taille }}</span>
-          <span><i class="fas fa-calendar"></i> Mis à jour le {{ manuel.date_ajout }}</span>
+          <span><i class="fas fa-calendar"></i> {{ _('Mis à jour le') }} {{ manuel.date_ajout }}</span>
         </div>
       </div>
     </div>
     <div class="detail-actions">
       <a href="{{ url_for('uploaded_file', filename=manuel.fichier) }}" 
          class="btn-download-lg" target="_blank">
-        <i class="fas fa-download"></i> Télécharger le PDF
+        <i class="fas fa-download"></i> {{ _('Télécharger le PDF') }}
       </a>
       <a href="{{ url_for('assistant') }}" class="btn-ask-ia">
-        <i class="fas fa-robot"></i> Interroger l'IA sur ce manuel
+        <i class="fas fa-robot"></i> {{ _("Interroger l'IA sur ce manuel") }}
       </a>
     </div>
   </div>

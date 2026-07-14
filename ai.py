@@ -1,7 +1,7 @@
 import os
+import re
 from groq import Groq
-from rag import rechercher_chunks
-
+from rag import rechercher_chunks, chercher_par_chapitre, rechercher_par_mot_cle
 _client = None
 
 
@@ -36,7 +36,9 @@ def generer_reponse(question, id_manuel=None, langue='fr'):
                 'sources': []
             }
 
-    chunks = rechercher_chunks(question, id_manuel=id_manuel, top_k=3)
+    chunks = chercher_par_chapitre(question, id_manuel) if id_manuel else None
+    if not chunks:
+        chunks = rechercher_chunks(question, id_manuel=id_manuel, top_k=5)
 
     if not chunks:
         msg = "I couldn't find any relevant information in the available documents." if langue == 'en' else "Je n'ai pas trouvé d'information pertinente dans les documents disponibles."
@@ -73,17 +75,21 @@ QUESTION : {question}
 RÉPONSE :"""
 
     client = get_client()
-    completion = client.chat.completions.create(
-        model=os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile'),
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,
-        max_tokens=1000
-    )
-
-    reponse = completion.choices[0].message.content
+    try:
+        completion = client.chat.completions.create(
+            model=os.environ.get('GROQ_MODEL', 'llama-3.3-70b-versatile'),
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=1000
+        )
+        reponse = completion.choices[0].message.content
+    except Exception as e:
+        print(f"❌ Erreur appel Groq : {e}")
+        msg = "The AI service is temporarily unavailable. Please try again later." if langue == 'en' else "Le service IA est temporairement indisponible. Merci de réessayer dans quelques instants."
+        return {'reponse': msg, 'sources': []}
 
     sources = [
-        {'page': chunk.num_page, 'extrait': chunk.extrait_texte[:150] + '...'}
+        {'manuel': chunk.manuel.titre, 'page': chunk.num_page, 'extrait': chunk.extrait_texte[:150] + '...'}
         for chunk in chunks
     ]
 
@@ -96,7 +102,23 @@ RÉPONSE :"""
     ]
     afficher_sources = not any(phrase in reponse.lower() for phrase in phrases_sans_source)
 
+    if not afficher_sources and id_manuel:
+        mots_cles = [m for m in re.findall(r'\w+', question) if len(m) > 3]
+        pages_mot_cle = rechercher_par_mot_cle(mots_cles, id_manuel)
+        if pages_mot_cle:
+            numeros_pages = ', '.join(str(p) for p, _ in pages_mot_cle)
+            if langue == 'en':
+                reponse += f"\n\n(Note: related terms appear on page(s) {numeros_pages} of the document, though I couldn't confirm a precise match.)"
+            else:
+                reponse += f"\n\n(Remarque : des termes proches apparaissent en page(s) {numeros_pages} du document, même si je n'ai pas pu confirmer une correspondance précise.)"
+
     return {
         'reponse': reponse,
         'sources': sources if afficher_sources else []
     }
+
+    return {
+        'reponse': reponse,
+        'sources': sources if afficher_sources else []
+    }
+    

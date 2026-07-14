@@ -88,21 +88,21 @@
 
   <div class="nav-links">
     <a href="{{ url_for('accueil') }}" class="nav-link {% if request.endpoint == 'accueil' %}active{% endif %}">
-      <i class="fas fa-home"></i> Accueil
+      <i class="fas fa-home"></i> {{ _('Accueil') }}
     </a>
     <a href="{{ url_for('assistant') }}" class="nav-link {% if request.endpoint == 'assistant' %}active{% endif %}">
-      <i class="fas fa-robot"></i> AssIA
+      <i class="fas fa-robot"></i> {{ _('AssIA') }}
     </a>
     <a href="{{ url_for('historique') }}" class="nav-link {% if request.endpoint == 'historique' %}active{% endif %}">
-      <i class="fas fa-history"></i> Historique
+      <i class="fas fa-history"></i> {{ _('Historique') }}
     </a>
     {% if session.role == 'admin' %}
     <a href="{{ url_for('administration') }}" class="nav-link {% if request.endpoint == 'administration' %}active{% endif %}">
-      <i class="fas fa-cog"></i> Administration
+      <i class="fas fa-cog"></i> {{ _('Administration') }}
     </a>
     {% endif %}
     <a href="{{ url_for('manuels') }}" class="nav-link {% if request.endpoint == 'manuels' %}active{% endif %}">
-      <i class="fas fa-book"></i> Manuels
+      <i class="fas fa-book"></i> {{ _('Manuels') }}
     </a>
   </div>
 
@@ -110,7 +110,7 @@
     <div class="user-avatar" title="{{ session.prenom }} {{ session.nom }}">
       {{ session.prenom[0] }}{{ session.nom[0] }}
     </div>
-    <a href="{{ url_for('logout') }}" class="btn-logout" title="Déconnexion">
+    <a href="{{ url_for('logout') }}" class="btn-logout" title="{{ _('Déconnexion') }}">
       <i class="fas fa-sign-out-alt"></i>
     </a>
   </div>
@@ -141,9 +141,10 @@
 <!-- FLOATING MASCOT -->
 <div class="mascot-container" id="mascotContainer">
   <div class="mascot-bubble" id="mascotBubble">
-    <p>Bonjour {{ session.prenom }} ! 👋<br>Je suis AssIA votre assistant IA SONACOS.<br>
-    <a href="{{ url_for('assistant') }}">Posez-moi une question →</a></p>
+    <p>{{ _('Bonjour') }} {{ session.prenom }} ! 👋<br>{{ _('Je suis AssIA votre assistant IA SONACOS.') }}<br>
+    <a href="{{ url_for('assistant') }}">{{ _('Posez-moi une question →') }}</a></p>
   </div>
+</parameter>
   <div class="mascot-wrapper" onclick="toggleMascotBubble()">
     <svg class="mascot-svg" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -215,10 +216,6 @@
 {% block scripts %}{% endblock %}
 
 <script>
-  if (localStorage.getItem('theme') === 'dark') {
-    document.body.classList.add('dark-mode');
-  }
-
   // ===== SYSTÈME DE CONFIRMATION CUSTOM =====
   let _modalResolve = null;
 

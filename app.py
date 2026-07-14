@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, send_from_directory
+from flask_babel import Babel, gettext as _, lazy_gettext as _l
 from functools import wraps
 import os
 from datetime import datetime
@@ -14,12 +15,27 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
 
-FAQ = [
-    {'question': 'Comment demander un congé annuel ?', 'reponse': 'Remplissez le formulaire sur l\'intranet RH, obtenez la validation de votre supérieur, puis transmettez au service RH 15 jours à l\'avance.', 'source': 'Manuel RH'},
-    {'question': 'Quels sont les EPI obligatoires en atelier ?', 'reponse': 'Casque, lunettes de protection, gants, chaussures de sécurité et gilet réfléchissant sont obligatoires dans toutes les zones de production.', 'source': 'Guide Sécurité'},
-    {'question': 'Comment signaler un incident de sécurité ?', 'reponse': 'Tout incident doit être signalé immédiatement au responsable HSE via le formulaire F-HSE-001 et enregistré dans le registre des incidents.', 'source': 'Guide Sécurité'},
-]
+# ─── Configuration Flask-Babel (langues) ──────────────────────────────────────
+app.config['LANGUAGES'] = ['fr', 'en']
+app.config['BABEL_DEFAULT_LOCALE'] = 'fr'
+app.config['BABEL_TRANSLATION_DIRECTORIES'] = 'translations'
 
+
+def get_locale():
+    # 1. Langue explicitement choisie et stockée en session
+    if 'langue' in session:
+        return session['langue']
+    # 2. Sinon, on se base sur les préférences du navigateur
+    return request.accept_languages.best_match(app.config['LANGUAGES']) or 'fr'
+
+
+babel = Babel(app, locale_selector=get_locale)
+
+FAQ = [
+    {'question': _l('Comment demander un congé annuel ?'), 'reponse': _l("Remplissez le formulaire sur l'intranet RH, obtenez la validation de votre supérieur, puis transmettez au service RH 15 jours à l'avance."), 'source': _l('Manuel RH')},
+    {'question': _l('Quels sont les EPI obligatoires en atelier ?'), 'reponse': _l('Casque, lunettes de protection, gants, chaussures de sécurité et gilet réfléchissant sont obligatoires dans toutes les zones de production.'), 'source': _l('Guide Sécurité')},
+    {'question': _l('Comment signaler un incident de sécurité ?'), 'reponse': _l('Tout incident doit être signalé immédiatement au responsable HSE via le formulaire F-HSE-001 et enregistré dans le registre des incidents.'), 'source': _l('Guide Sécurité')},
+]
 
 # ─── Helpers ─────────────────────────────────────────────────────────────────
 def login_required(f):
@@ -37,7 +53,7 @@ def admin_required(f):
         if 'user_id' not in session:
             return redirect(url_for('login'))
         if session.get('role') != 'admin':
-            flash('Accès réservé aux administrateurs.', 'error')
+            flash(_('Accès réservé aux administrateurs.'), 'error')
             return redirect(url_for('accueil'))
         return f(*args, **kwargs)
     return decorated
@@ -92,7 +108,7 @@ def login():
             session['prenom'] = user.prenom
             log_action('connexion', f'Connexion de {user.prenom} {user.nom}', id_utilisateur=user.id_utilisateur)
             return redirect(url_for('accueil'))
-        flash('Email ou mot de passe incorrect.', 'error')
+        flash(_('Email ou mot de passe incorrect.'), 'error')
     return render_template('login.html')
 
 
@@ -101,6 +117,11 @@ def logout():
     session.clear()
     return redirect(url_for('index'))
 
+@app.route('/set-langue/<langue>')
+def set_langue(langue):
+    if langue in app.config['LANGUAGES']:
+        session['langue'] = langue
+    return redirect(request.referrer or url_for('index'))
 
 # ─── Routes protégées ─────────────────────────────────────────────────────────
 @app.route('/accueil')
@@ -120,7 +141,7 @@ def manuels():
     if search:
         query = query.filter(Manuel.titre.ilike(f'%{search}%'))
     filtered = query.all()
-    categories = ['Manuel', 'SET-LOXO']
+    categories = ['Manuel', 'SET-LOXO', 'Autre']
     return render_template('manuels.html', manuels=filtered, categories=categories, categorie_active=categorie)
 
 
@@ -129,7 +150,7 @@ def manuels():
 def manuel_detail(id):
     manuel = Manuel.query.get(id)
     if not manuel:
-        flash('Manuel introuvable.', 'error')
+        flash(_('Manuel introuvable.'), 'error')
         return redirect(url_for('manuels'))
     return render_template('manuel_detail.html', manuel=manuel)
 
@@ -138,8 +159,8 @@ def manuel_detail(id):
 @login_required
 def assistant():
     conversations = Conversation.query.filter_by(id_utilisateur=session['user_id']).order_by(Conversation.date_creation.desc()).all()
-    return render_template('assistant.html', conversations=conversations)
-
+    manuels = Manuel.query.all()
+    return render_template('assistant.html', conversations=conversations, manuels=manuels)
 
 @app.route('/api/chat', methods=['POST'])
 @login_required
@@ -148,19 +169,26 @@ def api_chat():
     data = request.get_json()
     question = (data.get('question') or '').strip()
     id_conversation = data.get('id_conversation')
-    langue = data.get('langue', 'fr')
+    id_manuel = data.get('id_manuel')  # ← AJOUT : reçu du front pour une nouvelle conversation
+    langue = session.get('langue', 'fr')
 
     if not question:
         return jsonify({'error': 'Question vide'}), 400
 
-    resultat = generer_reponse(question, langue=langue)
-    # Sauvegarde de la conversation
     if id_conversation:
         conversation = Conversation.query.get(id_conversation)
+        if conversation:
+            id_manuel = conversation.id_manuel  # ← on réutilise le manuel déjà choisi pour cette conversation
     else:
+        conversation = None
+
+    resultat = generer_reponse(question, id_manuel=id_manuel, langue=langue)  # ← AJOUT id_manuel
+
+    if not conversation:
         conversation = Conversation(
             titre=question[:80],
-            id_utilisateur=session['user_id']
+            id_utilisateur=session['user_id'],
+            id_manuel=id_manuel  # ← AJOUT
         )
         db.session.add(conversation)
         db.session.flush()
@@ -202,7 +230,7 @@ def effacer_historique():
         Interaction.query.filter_by(id_conversation=conv.id_conversation).delete()
     Conversation.query.filter_by(id_utilisateur=session['user_id']).delete()
     db.session.commit()
-    flash("Tout l'historique a été effacé.", 'success')
+    flash(_("Tout l'historique a été effacé."), 'success')
     return redirect(url_for('historique'))
 
 @app.route('/historique/supprimer/<int:id>', methods=['POST'])
@@ -210,7 +238,7 @@ def effacer_historique():
 def supprimer_conversation(id):
     conv = Conversation.query.get_or_404(id)
     if conv.id_utilisateur != session['user_id']:
-        flash('Action non autorisée.', 'error')
+        flash(_('Action non autorisée.'), 'error')
         return redirect(url_for('assistant'))
     Interaction.query.filter_by(id_conversation=conv.id_conversation).delete()
     db.session.delete(conv)
@@ -242,14 +270,14 @@ def ajouter_manuel():
         fichier = request.files.get('fichier')
 
         if not fichier or not allowed_file(fichier.filename):
-            flash('Fichier invalide, seuls les PDF sont acceptés.', 'error')
-            categories = ['Manuel', 'SET-LOXO']
+            flash(_('Fichier invalide, seuls les PDF sont acceptés.'), 'error')
+            categories = ['Manuel', 'SET-LOXO', 'Autre']
             return render_template('ajouter_manuel.html', categories=categories)
 
         # Vérifie qu'un manuel avec ce titre n'existe pas déjà
         if Manuel.query.filter_by(titre=titre).first():
-            flash(f'Un manuel intitulé "{titre}" existe déjà. Choisissez un autre titre.', 'error')
-            categories = ['Manuel', 'SET-LOXO']
+            flash(_('Un manuel intitulé "%(titre)s" existe déjà. Choisissez un autre titre.', titre=titre), 'error')
+            categories = ['Manuel', 'SET-LOXO', 'Autre']
             return render_template('ajouter_manuel.html', categories=categories)
 
         os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
@@ -281,11 +309,12 @@ def ajouter_manuel():
         nb_chunks = indexer_document(chemin, manuel.id_manuel)
 
         log_action('admin', f'Ajout du manuel "{titre}"')
-
-        flash(f'Manuel "{titre}" ajouté et indexé avec succès ({nb_chunks} extraits).', 'success')
+        
+        flash(_('Manuel "%(titre)s" ajouté et indexé avec succès (%(nb_chunks)s extraits).', titre=titre, nb_chunks=nb_chunks), 'success') 
+        
         return redirect(url_for('administration'))
 
-    categories = ['Manuel', 'SET-LOXO']
+    categories = ['Manuel', 'SET-LOXO', 'Autre']
     return render_template('ajouter_manuel.html', categories=categories)
 
 
@@ -299,16 +328,15 @@ def ajouter_utilisateur():
         password = request.form.get('password')
         role = request.form.get('role', 'employe')
         if User.query.filter_by(email=email).first():
-            flash('Cet email est déjà utilisé.', 'error')
+            flash(_('Cet email est déjà utilisé.'), 'error')
         else:
             user = User(nom=nom, prenom=prenom, email=email, role=role)
             user.set_password(password)
             db.session.add(user)
             db.session.commit()
             log_action('admin', f'Création de l\'utilisateur {prenom} {nom} ({role})')
-            flash(f'Utilisateur {prenom} {nom} créé avec succès.', 'success')
+            flash(_('Utilisateur %(prenom)s %(nom)s créé avec succès.', prenom=prenom, nom=nom), 'success')
             return redirect(url_for('administration'))
-    return render_template('ajouter_utilisateur.html')
 
 
 @app.route('/administration/supprimer-manuel/<int:id>', methods=['POST'])
@@ -322,7 +350,7 @@ def supprimer_manuel(id):
     if chemin and os.path.exists(chemin):
         os.remove(chemin)
     log_action('admin', f'Suppression du manuel "{titre}"')
-    flash('Manuel supprimé.', 'success')
+    flash(_('Manuel supprimé.'), 'success')
     return redirect(url_for('administration'))
 
 
@@ -330,14 +358,14 @@ def supprimer_manuel(id):
 @admin_required
 def supprimer_utilisateur(id):
     if id == session.get('user_id'):
-        flash('Vous ne pouvez pas supprimer votre propre compte.', 'error')
+        flash(_('Vous ne pouvez pas supprimer votre propre compte.'), 'error')
         return redirect(url_for('administration'))
     user = User.query.get_or_404(id)
     nom_complet = f'{user.prenom} {user.nom}'
     db.session.delete(user)
     db.session.commit()
     log_action('admin', f'Suppression de l\'utilisateur {nom_complet}')
-    flash('Utilisateur supprimé.', 'success')
+    flash(_('Utilisateur supprimé.'), 'success')
     return redirect(url_for('administration'))
 
 
@@ -357,6 +385,10 @@ def effacer_historique_admin():
     db.session.commit()
     flash("Tout l'historique a été effacé.", 'success')
     return redirect(url_for('administration'))
+
+@app.context_processor
+def inject_locale():
+    return dict(get_locale=get_locale)
 
 if __name__ == '__main__':
     os.makedirs('uploads', exist_ok=True)

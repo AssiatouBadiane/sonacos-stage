@@ -1,5 +1,32 @@
 // SONACOS — main.js
 
+// ═══════════════════════════════════════════════
+// GESTION DU THÈME (mode clair / sombre)
+// ═══════════════════════════════════════════════
+function applyTheme(theme) {
+  if (theme === 'dark') {
+    document.body.classList.add('dark-mode');
+  } else {
+    document.body.classList.remove('dark-mode');
+  }
+  localStorage.setItem('theme', theme);
+
+  // Synchronise l'état visuel de tous les toggles présents sur la page
+  document.querySelectorAll('.theme-toggle-input').forEach(input => {
+    input.checked = (theme === 'dark');
+  });
+}
+
+function toggleTheme() {
+  const isDark = document.body.classList.contains('dark-mode');
+  applyTheme(isDark ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'light';
+  applyTheme(saved);
+}
+
 // Mascot bubble toggle
 function toggleMascotBubble() {
   const bubble = document.getElementById('mascotBubble');
@@ -8,6 +35,8 @@ function toggleMascotBubble() {
 
 // Auto-close mascot bubble after 5s on load
 document.addEventListener('DOMContentLoaded', () => {
+  initTheme();
+
   const bubble = document.getElementById('mascotBubble');
   if (bubble) {
     setTimeout(() => bubble.classList.add('show'), 1500);
