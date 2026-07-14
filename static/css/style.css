@@ -1027,3 +1027,4 @@ body.dark-mode .btn-modal-cancel { background: var(--dm-border); color: var(--dm
 /* Empty states / icônes secondaires */
 body.dark-mode .empty-state { color: var(--dm-text-muted); }
 body.dark-mode .cta-image { opacity: .25; }
+
