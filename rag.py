@@ -6,11 +6,10 @@ from pypdf import PdfReader
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 
-from models import db, Chunk, Chapitre
+from models import db, Chunk, Chapitre, Manuel
 
 # Modèle d'embeddings chargé une seule fois au démarrage
 _model = None
-
 
 def get_model():
     global _model
@@ -18,6 +17,58 @@ def get_model():
         _model = SentenceTransformer('paraphrase-multilingual-MiniLM-L12-v2')
     return _model
 
+class ManuelLeger:
+    __slots__ = ('titre',)
+    def __init__(self, titre):
+        self.titre = titre
+
+
+class ChunkLeger:
+    """Copie légère d'un Chunk, sans dépendance à une session SQLAlchemy —
+    sûre à garder en cache entre plusieurs requêtes web."""
+    __slots__ = ('id_chunk', 'num_page', 'extrait_texte', 'manuel')
+    def __init__(self, id_chunk, num_page, extrait_texte, titre_manuel):
+        self.id_chunk = id_chunk
+        self.num_page = num_page
+        self.extrait_texte = extrait_texte
+        self.manuel = ManuelLeger(titre_manuel)
+
+
+_cache_embeddings = {}  # id_manuel -> {'chunks': [...], 'matrix': np.array}
+
+def get_embeddings_manuel(id_manuel):
+    """Charge et met en cache la matrice d'embeddings d'un manuel, sous
+    forme de données pures (pas d'objets SQLAlchemy) pour rester valide
+    entre plusieurs requêtes web."""
+    if id_manuel in _cache_embeddings:
+        return _cache_embeddings[id_manuel]
+
+    chunks_orm = Chunk.query.filter_by(id_manuel=id_manuel).all()
+    if not chunks_orm:
+        return None
+
+    manuel = Manuel.query.get(id_manuel)
+    titre_manuel = manuel.titre if manuel else ''
+
+    chunks = [
+        ChunkLeger(c.id_chunk, c.num_page, c.extrait_texte, titre_manuel)
+        for c in chunks_orm
+    ]
+    matrix = np.array([
+        list(map(float, c.embedding.split(','))) for c in chunks_orm
+    ])
+
+    resultat = {'chunks': chunks, 'matrix': matrix}
+    _cache_embeddings[id_manuel] = resultat
+    return resultat
+
+def invalider_cache(id_manuel=None):
+    """À appeler après une réindexation pour forcer le rechargement
+    depuis la base au prochain appel. Sans argument, vide tout le cache."""
+    if id_manuel is None:
+        _cache_embeddings.clear()
+    else:
+        _cache_embeddings.pop(id_manuel, None)
 
 def extraire_texte_pdf(chemin_fichier):
     """Extrait tout le texte d'un fichier PDF page par page"""
@@ -37,24 +88,46 @@ def extraire_texte_pdf(chemin_fichier):
 
 
 def decouper_en_chunks(pages, taille=800, overlap=150):
-    """Découpe le texte en chunks cohérents, en respectant les phrases et avec chevauchement"""
-    chunks = []
+    """Découpe le texte du document ENTIER (toutes les pages concaténées)
+    en chunks cohérents, avec chevauchement — sans jamais couper au niveau
+    d'une frontière de page. Chaque chunk garde un numéro de page précis
+    (la page où il commence)."""
+    texte_complet = ''
+    offsets_pages = []  # [(offset_de_debut_dans_texte_complet, num_page), ...]
+
     for page in pages:
-        texte = re.sub(r'\s+', ' ', page['texte']).strip()
-        num_page = page['num_page']
-        start = 0
-        while start < len(texte):
-            end = start + taille
-            morceau = texte[start:end]
-            if end < len(texte):
-                dernier_point = morceau.rfind('. ')
-                if dernier_point > taille * 0.5:
-                    morceau = morceau[:dernier_point + 1]
-                    end = start + dernier_point + 1
-            morceau = morceau.strip()
-            if len(morceau) > 100:
-                chunks.append({'texte': morceau, 'num_page': num_page})
-            start = end - overlap
+        texte_page = re.sub(r'\s+', ' ', page['texte']).strip()
+        if not texte_page:
+            continue
+        offsets_pages.append((len(texte_complet), page['num_page']))
+        texte_complet += texte_page + ' '
+
+    def page_pour_offset(offset):
+        """Retrouve le numéro de page correspondant à une position donnée
+        dans le texte complet concaténé."""
+        page_trouvee = offsets_pages[0][1] if offsets_pages else 1
+        for offset_debut, num_page in offsets_pages:
+            if offset_debut <= offset:
+                page_trouvee = num_page
+            else:
+                break
+        return page_trouvee
+
+    chunks = []
+    start = 0
+    while start < len(texte_complet):
+        end = start + taille
+        morceau = texte_complet[start:end]
+        if end < len(texte_complet):
+            dernier_point = morceau.rfind('. ')
+            if dernier_point > taille * 0.5:
+                morceau = morceau[:dernier_point + 1]
+                end = start + dernier_point + 1
+        morceau = morceau.strip()
+        if len(morceau) > 100:
+            chunks.append({'texte': morceau, 'num_page': page_pour_offset(start)})
+        start = end - overlap
+
     return chunks
 
 
@@ -103,30 +176,48 @@ def indexer_document(chemin_fichier, id_manuel):
             ))
         db.session.commit()
         print(f"📑 {len(sommaire)} chapitres détectés et enregistrés.")
-    
+        
+    invalider_cache(id_manuel)
     return len(chunks)
 
-
-def rechercher_chunks(question, id_manuel=None, top_k=3, seuil=0.3):
+def rechercher_chunks(question, id_manuel=None, top_k=5, seuil=0.3, poids_mot_cle=6.0):
+    """Recherche hybride : combine le score sémantique (embeddings) avec
+    un boost basé sur la présence de mots-clés rares (type IDF). Un chunk
+    contenant un mot-clé rare de la question (ex: 'congé') remonte même
+    si sa similarité sémantique brute est moyenne."""
     model = get_model()
     question_embedding = model.encode(question)
 
     if id_manuel:
-        chunks = Chunk.query.filter_by(id_manuel=id_manuel).all()
+        data = get_embeddings_manuel(id_manuel)
+        if not data:
+            return []
+        chunks, chunk_embeddings = data['chunks'], data['matrix']
     else:
         chunks = Chunk.query.all()
+        if not chunks:
+            return []
+        chunk_embeddings = np.array([list(map(float, c.embedding.split(','))) for c in chunks])
 
-    if not chunks:
-        return []
-
-    chunk_embeddings = np.array([
-        list(map(float, chunk.embedding.split(','))) for chunk in chunks
-    ])
     similarites = cosine_similarity([question_embedding], chunk_embeddings)[0]
 
-    resultats = sorted(zip(chunks, similarites), key=lambda x: x[1], reverse=True)
+    boost_mot_cle = scores_mot_cle_par_chunk(question, id_manuel) if id_manuel else {}
 
-    resultats = [(chunk, score) for chunk, score in resultats[:top_k] if score >= seuil]
+    resultats = []
+    for chunk, score_semantique in zip(chunks, similarites):
+        boost = boost_mot_cle.get(chunk.id_chunk, 0.0)
+        score_final = score_semantique + poids_mot_cle * boost
+        resultats.append((chunk, score_final, score_semantique))
+
+    resultats.sort(key=lambda x: x[1], reverse=True)
+
+    # Garde un chunk si son score sémantique dépasse le seuil, OU s'il a
+    # un boost mot-clé (permet à un chunk pertinent par mot-clé mais un peu
+    # faible sémantiquement de passer quand même)
+    resultats = [
+        (chunk, score_final) for chunk, score_final, score_sem in resultats[:top_k * 2]
+        if score_sem >= seuil or boost_mot_cle.get(chunk.id_chunk, 0.0) > 0
+    ][:top_k]
 
     return [chunk for chunk, score in resultats]
 
@@ -193,10 +284,10 @@ MOTS_VIDES = {
     'informations', 'donne', 'parle', 'dis', 'peux', 'peut', 'veux'
 }
 
-
 def rechercher_par_mot_cle(mots_cles, id_manuel, max_pages=8):
-    """Recherche par préfixe (tolère fautes de frappe/pluriels) en excluant
-    les mots trop génériques qui polluent le résultat."""
+    """Recherche par préfixe, en pondérant chaque mot-clé par sa rareté :
+    un mot présent dans peu de pages (ex: 'congé') compte plus qu'un mot
+    omniprésent (ex: 'solde' dans un contexte financier)."""
     mots_normalises = [
         normaliser(m) for m in mots_cles
         if len(m) > 3 and normaliser(m) not in MOTS_VIDES
@@ -205,15 +296,70 @@ def rechercher_par_mot_cle(mots_cles, id_manuel, max_pages=8):
         return []
 
     chunks = Chunk.query.filter_by(id_manuel=id_manuel).all()
-    pages_trouvees = {}
 
-    for chunk in chunks:
-        texte_normalise = normaliser(chunk.extrait_texte)
-        mots_du_texte = set(re.findall(r'\w+', texte_normalise))
+    chunks_tokens = [
+        (chunk, set(re.findall(r'\w+', normaliser(chunk.extrait_texte))))
+        for chunk in chunks
+    ]
+
+    frequences = {}
+    for mot in mots_normalises:
+        prefixe = mot[:5]
+        nb = sum(1 for _, tokens in chunks_tokens if any(t.startswith(prefixe) for t in tokens))
+        frequences[mot] = max(nb, 1)
+
+    scores_par_page = {}
+    for chunk, tokens in chunks_tokens:
+        score = 0.0
         for mot in mots_normalises:
-            prefixe = mot[:5]  # tolère fin de mot différente (conger → congé/congés)
-            if any(m.startswith(prefixe) for m in mots_du_texte) and chunk.num_page not in pages_trouvees:
-                pages_trouvees[chunk.num_page] = chunk.extrait_texte[:150]
-                break
+            prefixe = mot[:5]
+            if any(t.startswith(prefixe) for t in tokens):
+                score += 1.0 / frequences[mot]
+        if score > 0:
+            if chunk.num_page not in scores_par_page or score > scores_par_page[chunk.num_page][0]:
+                scores_par_page[chunk.num_page] = (score, chunk.extrait_texte[:150])
 
-    return sorted(pages_trouvees.items())[:max_pages]
+    resultats = sorted(scores_par_page.items(), key=lambda x: (-x[1][0], x[0]))
+    return [(page, extrait) for page, (score, extrait) in resultats[:max_pages]]
+
+def scores_mot_cle_par_chunk(question, id_manuel):
+    """Calcule un score TF-IDF par CHUNK : fréquence du mot-clé DANS le
+    chunk (TF), pondérée par sa rareté dans le document entier (IDF).
+    Un chunk qui mentionne 'congé' 4 fois pèse plus qu'un chunk qui le
+    mentionne une seule fois en passant."""
+    mots_bruts = re.findall(r'\w+', question)
+    mots_normalises = [
+        normaliser(m) for m in mots_bruts
+        if len(m) > 3 and normaliser(m) not in MOTS_VIDES
+    ]
+    if not mots_normalises:
+        return {}
+
+    data = get_embeddings_manuel(id_manuel)
+    if not data:
+        return {}
+    chunks = data['chunks']
+
+    chunks_tokens = [
+        (chunk, re.findall(r'\w+', normaliser(chunk.extrait_texte)))  # liste, pas set : garde les doublons
+        for chunk in chunks
+    ]
+
+    frequences_docs = {}
+    for mot in mots_normalises:
+        prefixe = mot[:5]
+        nb = sum(1 for _, tokens in chunks_tokens if any(t.startswith(prefixe) for t in tokens))
+        frequences_docs[mot] = max(nb, 1)
+
+    scores = {}
+    for chunk, tokens in chunks_tokens:
+        score = 0.0
+        for mot in mots_normalises:
+            prefixe = mot[:5]
+            tf = sum(1 for t in tokens if t.startswith(prefixe))  # compte les occurrences
+            if tf > 0:
+                score += tf / frequences_docs[mot]
+        if score > 0:
+            scores[chunk.id_chunk] = score
+
+    return scores

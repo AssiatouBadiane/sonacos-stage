@@ -337,6 +337,7 @@ def ajouter_utilisateur():
             log_action('admin', f'Création de l\'utilisateur {prenom} {nom} ({role})')
             flash(_('Utilisateur %(prenom)s %(nom)s créé avec succès.', prenom=prenom, nom=nom), 'success')
             return redirect(url_for('administration'))
+    return render_template('ajouter_utilisateur.html')
 
 
 @app.route('/administration/supprimer-manuel/<int:id>', methods=['POST'])
